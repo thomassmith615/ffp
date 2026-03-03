@@ -1,6 +1,8 @@
 # Fortune Financial Planning — WordPress Theme
 
-A custom, production-deployed WordPress theme for [Fortune Financial Planning](https://fortunefinancialplanning.com), a South Jersey fiduciary advisory firm affiliated with LPL Financial.
+A custom, production-deployed WordPress theme for [Fortune Financial Planning](https://www.fortunefinancialplanning.com) (existing site), a South Jersey fiduciary advisory firm affiliated with LPL Financial.
+
+New site: https://jowens8f0b95cf44-vbywr.wpcomstaging.com/
 
 Built from scratch as a single-page application (SPA) inside WordPress — no page builder, no template framework.
 
