@@ -1,0 +1,16 @@
+/*
+Theme Name: Fortune Financial Planning
+Theme URI: https://fortunefinancialplanning.com
+Author: Fortune Financial Planning
+Author URI: https://fortunefinancialplanning.com
+Description: Custom theme for Fortune Financial Planning — a South Jersey financial advisory firm. Single-page app style navigation, fully responsive, fiduciary-focused design.
+Version: 1.0.0
+Requires at least: 6.0
+Tested up to: 6.7
+Requires PHP: 8.0
+License: Proprietary
+License URI: #
+Text Domain: fortune-financial
+*/
+
+/* All styles are loaded via assets/css/main.css via functions.php */
