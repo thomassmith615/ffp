@@ -1,100 +1,115 @@
 # Fortune Financial Planning — WordPress Theme
 
-## What's in this package
+A custom, production-deployed WordPress theme for [Fortune Financial Planning](https://fortunefinancialplanning.com), a South Jersey fiduciary advisory firm affiliated with LPL Financial.
+
+Built from scratch as a single-page application (SPA) inside WordPress — no page builder, no template framework.
+
+---
+
+## Live Site
+
+> fortunefinancialplanning.com
+
+---
+
+## Tech Stack
+
+| Layer | Details |
+|---|---|
+| CMS | WordPress 6.x (custom theme, no page builder) |
+| Frontend | Vanilla JS, CSS custom properties, no framework |
+| Routing | Client-side SPA router with `history.pushState` |
+| Fonts | Google Fonts — Cormorant Garamond + DM Sans |
+| Backend | PHP 8, WordPress AJAX API, WP REST API |
+| Auth | WordPress nonce-based CSRF protection |
+| Email | `wp_mail()` + WP Mail SMTP |
+
+---
+
+## Features
+
+**SPA Routing**
+- Client-side router maps `/about`, `/solutions`, etc. to a single WordPress template
+- Deep-link support — any URL loads the correct view directly
+- `history.pushState` / `popstate` for native back/forward navigation
+- WordPress rewrite rules + `template_include` filter ensure server-side 200 responses for all SPA routes
+- Subdirectory install support via `fortuneData.homeUrl`
+
+**Contact Form**
+- WordPress AJAX handler (`wp_ajax_fortune_contact`) with nonce verification
+- Sanitized with `sanitize_text_field`, `sanitize_email`, `sanitize_textarea_field`
+- `wp_mail()` delivery with Reply-To header
+- Inline success/error feedback injected into the DOM without a page reload
+
+**Insights / Blog**
+- Custom post type (`insight`) with custom taxonomy (`insight_category`)
+- REST API endpoint at `/wp-json/fortune/v1/insights` with pagination and category filtering
+- "Show All" button fetches additional posts dynamically; gracefully falls back to static HTML if the API is unavailable
+
+**Solutions Slideshow**
+- Touch/swipe support via `touchstart` / `touchend`
+- CSS transitions between slides with no JS animation library
+
+**Scroll Reveal**
+- `IntersectionObserver`-based reveal system for staggered entrance animations
+- Trigger delay classes (`d1`–`d5`) for sequenced reveals per section
+
+**Custom Post Types**
+- `insight` — blog/articles with REST API support
+- `team_member` — advisor profiles
+- `testimonial` — client reviews (non-public, admin-only)
+
+**Performance & SEO**
+- Removes WordPress emoji scripts, generator tag, RSD/WLW links from `<head>`
+- Dynamic `<title>` tag per SPA route via `pre_get_document_title` filter
+- Theme activation flushes rewrite rules automatically
+
+---
+
+## Project Structure
 
 ```
-fortune-financial-theme/
-├── style.css               ← Required by WordPress (theme metadata)
-├── index.php               ← Main SPA shell template
-├── header.php              ← Nav + <head> output
-├── footer.php              ← Footer + wp_footer()
-├── functions.php           ← Enqueues assets, registers custom post types,
-│                              handles contact form, REST API
+ffp/
+├── style.css                   # Theme metadata (WordPress requirement)
+├── index.php                   # SPA shell — loads all page partials
+├── header.php                  # <head>, nav, mobile drawer
+├── footer.php                  # wp_footer() hook
+├── functions.php               # Theme setup, enqueue, AJAX, CPTs, REST API
 ├── assets/
-│   ├── css/
-│   │   └── main.css        ← All site styles (extracted from index.html)
-│   └── js/
-│       └── main.js         ← All site JS (router, slider, tabs, etc.)
-└── partials/               ← (you'll create these — see below)
-    ├── page-home.php
-    ├── page-about.php
-    ├── page-solutions.php
-    ├── page-insights.php
-    ├── page-resources.php
-    └── page-contact.php
+│   ├── css/main.css            # All styles (~900 lines, no preprocessor)
+│   └── js/main.js              # Router, slider, forms, reveal (~350 lines)
+└── partials/
+    ├── page-home.php           # Hero, services preview, testimonials, CTA
+    ├── page-about.php          # Team grid with placeholder/photo support
+    ├── page-solutions.php      # Swipeable 6-slide solution showcase
+    ├── page-insights.php       # Article grid + dynamic WP REST expansion
+    ├── page-resources.php      # Tabbed resource center (8 categories)
+    ├── page-contact.php        # AJAX contact form
+    └── shared-footer.php       # Shared footer with live copyright year
 ```
-
-The standalone `index.html` in the root is your **development preview** — open it in any browser, no server needed.
 
 ---
 
-## How to install in WordPress
+## WordPress Installation
 
-### Step 1 — Get WordPress
-If you don't have it yet: https://wordpress.org/download/
-Most web hosts (SiteGround, WP Engine, Bluehost, etc.) have a one-click WordPress installer in their control panel.
-
-### Step 2 — Upload the theme
-1. Log into your WordPress dashboard: `yourdomain.com/wp-admin`
-2. Go to **Appearance → Themes → Add New → Upload Theme**
-3. Zip the `fortune-financial-theme` folder (right-click → Compress/Zip)
-4. Upload the zip file
-5. Click **Activate**
-
-### Step 3 — Set up the homepage
-1. Go to **Pages → Add New**, title it "Home", set the Page Template to "Home (SPA)" and publish it
-2. Go to **Settings → Reading** and set "Your homepage displays" to **A static page**, choosing "Home"
-
-### Step 4 — Partials (split the HTML into PHP files)
-The theme is designed so the HTML for each "page" lives in `/partials/page-home.php`, etc.
-Copy the corresponding `<div id="page-home">...</div>` blocks from `index.html` into each partial file, wrapped like this:
-
-```php
-<!-- partials/page-home.php -->
-<div id="page-home" class="page-view active">
-  ... (paste your home HTML here) ...
-</div>
-```
-
-Do this for each page: home, about, solutions, insights, resources, contact.
-
-### Step 5 — Contact form
-The theme includes a WordPress AJAX handler for the contact form. In `main.js`, the form submit button currently uses `alert()`. To wire it to WordPress:
-
-```js
-// Replace the onclick alert with this:
-document.querySelector('.form-submit').addEventListener('click', async () => {
-  const data = new FormData();
-  data.append('action', 'fortune_contact');
-  data.append('nonce', fortuneData.nonce);
-  data.append('first_name', document.querySelector('input[placeholder="Jane"]').value);
-  // ... add other fields
-  const res = await fetch(fortuneData.ajaxUrl, { method: 'POST', body: data });
-  const json = await res.json();
-  alert(json.data.message);
-});
-```
-
-### Step 6 — Adding Insights (blog posts)
-The theme registers a custom post type called **Insights**.
-- Go to **Insights → Add New** in the WP admin sidebar
-- Add a title, content, excerpt, category, and author
-- Publish — the REST API at `/wp-json/fortune/v1/insights` will serve them to the front end
-
-To make the Insights page load dynamically from WordPress instead of static HTML,
-update the `page-insights.php` partial to fetch from the REST API using `fortuneData.themeUrl`.
+1. Zip the `ffp/` folder and upload via **Appearance → Themes → Add New → Upload Theme**
+2. Activate the theme — rewrite rules flush automatically on activation
+3. Go to **Pages → Add New**, create a page titled "Home", publish it
+4. Go to **Settings → Reading** → set homepage to the static "Home" page
+5. Install **WP Mail SMTP** and configure your mail provider for reliable contact form delivery
+6. Add articles via **Insights → Add New** in the WP admin sidebar
 
 ---
 
-## Recommended plugins
-- **Yoast SEO** — meta tags, sitemap
-- **WP Mail SMTP** — makes the contact form email reliable
-- **Wordfence** — security
-- **WP Super Cache** — performance
+## Local Development
+
+No build step required. Open `index.html` in a browser for a static preview, or run a standard local WordPress environment (LocalWP, MAMP, etc.) and drop the theme into `wp-content/themes/`.
 
 ---
 
 ## Notes
-- The site uses a client-side router (`goTo()` function). This means WordPress's normal page routing isn't used for navigation — all views are rendered in the browser from one page load.
-- When you're ready to add real article content, the custom post type + REST API route are already set up.
-- LPL Financial compliance review may require specific disclosures on certain pages — those are already in the footer and on applicable resource pages.
+
+- The SPA router handles subdirectory WordPress installs — `fortuneData.homeUrl` (injected via `wp_localize_script`) is used to strip the base path before slug matching
+- Trailing slash redirects are handled server-side via `template_redirect` to prevent "Forbidden" responses on directory-style URLs
+- LPL Financial compliance disclosures are included in the footer and resource pages as required
+- All user-supplied data rendered in JS goes through a custom `_esc()` function to prevent XSS
