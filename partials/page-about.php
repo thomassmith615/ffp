@@ -31,7 +31,7 @@
           <p style="font-family:var(--font-display);font-size:1.55rem;font-weight:300;color:var(--green);line-height:1.3;font-style:italic">"True financial planning encompasses elements beyond investments and insurance."</p>
           <p style="font-size:0.8rem;color:var(--sage);margin-top:0.75rem">— Kevin J. Gianfortune, Founder</p>
         </div>
-        <button class="btn btn-green" onclick="goTo('contact')">Schedule a Meeting</button>
+        <a class="btn btn-green" href="/contact" data-route data-page="contact">Schedule a Meeting</a>
       </div>
     </div>
     <style>@media(max-width:700px){#page-about .section-inner[style*="grid"]{display:block!important}#page-about .section-inner[style*="grid"]>div+div{margin-top:2rem}}</style>

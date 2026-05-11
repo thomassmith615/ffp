@@ -71,7 +71,7 @@
 
       <div style="text-align:center;margin-top:3rem">
         <p style="font-size:0.94rem;font-weight:300;color:rgba(57,52,30,0.65);margin-bottom:1.2rem">Not sure where to start? A 15-minute call is all it takes.</p>
-        <button class="btn btn-green" onclick="goTo('contact')">Schedule a Free Introduction</button>
+        <a class="btn btn-green" href="/contact" data-route data-page="contact">Schedule a Free Introduction</a>
       </div>
     </div>
   </div>

@@ -198,6 +198,10 @@
 
     /* ══════════════════════════════════════════
        HOME — HERO
+       Note: .hero-bg video now fills the container with
+       object-fit cover. Without these rules the video
+       renders at its natural size in the top-left,
+       which made it look "zoomed into the top-left".
     ══════════════════════════════════════════ */
     #hero {
       position: relative; height: 100svh; min-height: 560px;
@@ -208,9 +212,24 @@
       position: absolute; inset: 0; z-index: 0;
       background: linear-gradient(160deg, #2e2a14 0%, #4a6039 45%, #39341e 100%);
     }
+    .hero-bg video {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      height: 100%;
+      min-width: 100%;
+      min-height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      transform: translate(-50%, -50%);
+      z-index: 0;
+      pointer-events: none;
+    }
     .hero-bg::after {
-      content: ''; position: absolute; inset: 0;
+      content: ''; position: absolute; inset: 0; z-index: 1;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Crect width='80' height='80' fill='none'/%3E%3Cpath d='M0 0l80 80M80 0L0 80' stroke='rgba(255,255,255,0.025)' stroke-width='1'/%3E%3C/svg%3E");
+      pointer-events: none;
     }
     .hero-overlay {
       position: absolute; inset: 0; z-index: 1;
@@ -394,7 +413,6 @@
     }
     .team-photo-placeholder .initials { font-family: var(--font-display); font-size: 3.5rem; font-weight: 300; color: rgba(112,123,97,0.5); line-height: 1; }
     .team-photo-placeholder .ph-label { font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(112,123,97,0.5); }
-    /* smaller initials on mobile 2-col */
     @media (max-width: 700px) {
       .team-photo-placeholder .initials { font-size: 2.2rem; }
     }
@@ -446,7 +464,6 @@
       touch-action: pan-y;
     }
 
-    /* Image / icon side */
     .sol-visual {
       width: 42%;
       flex-shrink: 0;
@@ -472,7 +489,6 @@
       color: rgba(255,255,255,0.4);
     }
 
-    /* Text side */
     .sol-content-wrap {
       flex: 1;
       position: relative;
@@ -505,7 +521,6 @@
       border: 1px solid rgba(112,123,97,0.35); border-radius: 2px; padding: 4px 9px;
     }
 
-    /* Nav dots + arrows */
     .sol-nav {
       display: flex; align-items: center; gap: 1.2rem;
       margin-top: 1.5rem; padding: 0 clamp(2rem,6vw,5rem);
@@ -593,7 +608,6 @@
     .res-panel { display: none; }
     .res-panel.active { display: block; animation: pageFadeIn 0.3s var(--ease); }
 
-    /* Resource category quick links */
     .resource-quicklinks {
       display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem;
     }
@@ -604,7 +618,6 @@
     }
     .rql-btn:hover, .rql-btn.active { background: var(--green); color: var(--white); border-color: var(--green); }
 
-    /* Overview */
     .resource-cards {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%,240px), 1fr));
       gap: 1rem; margin-bottom: 3rem;
@@ -618,7 +631,6 @@
     .resource-card h4 { font-family: var(--font-display); font-size: 1.2rem; font-weight: 400; color: var(--dark); margin-bottom: 0.4rem; }
     .resource-card p { font-size: 0.85rem; font-weight: 300; line-height: 1.6; color: rgba(57,52,30,0.6); }
 
-    /* Category sub-pages (retirement, investment, etc.) */
     .res-category-header { margin-bottom: 2rem; }
     .res-category-header h2 { font-family: var(--font-display); font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 300; color: var(--dark); margin-bottom: 0.5rem; }
     .res-category-header p { font-size: 0.94rem; font-weight: 300; line-height: 1.75; color: rgba(57,52,30,0.68); max-width: 580px; }
@@ -640,7 +652,6 @@
     .res-split-text h3 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 400; color: var(--dark); margin-bottom: 0.7rem; }
     .res-split-text p { font-size: 0.9rem; font-weight: 300; line-height: 1.8; color: rgba(57,52,30,0.68); }
 
-    /* Tabbed section inside category */
     .cat-tabs {
       display: flex; border-bottom: 1px solid rgba(190,189,174,0.5); margin-bottom: 1.5rem; gap: 0;
     }
@@ -672,7 +683,6 @@
     }
     .view-all-link:hover { letter-spacing: 0.15em; }
 
-    /* Calculators */
     .calc-section { margin-bottom: 2.5rem; }
     .calc-section-title {
       font-family: var(--font-display); font-size: 1.45rem; font-weight: 400;
@@ -689,6 +699,145 @@
     .calc-list li span { font-size: 0.92rem; font-weight: 300; color: var(--dark); }
     .calc-arrow { font-size: 0.8rem; color: var(--sage); transition: transform 0.2s; }
     .calc-list li:hover .calc-arrow { transform: translateX(4px); color: var(--green); }
+
+    /* ══════════════════════════════════════════
+       SINGLE ARTICLE / CALCULATOR / VIDEO VIEW
+       Shown inline within /resources/article/{slug} and
+       /insights/{slug}. Designed for shareable, link-friendly
+       deep content with breadcrumbs, share buttons, and a CTA.
+    ══════════════════════════════════════════ */
+    .single-article {
+      max-width: 760px; margin: 0 auto;
+      animation: pageFadeIn 0.4s var(--ease);
+    }
+    .single-crumbs {
+      display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap;
+      font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--sage); margin-bottom: 2rem;
+    }
+    .single-crumbs a {
+      color: var(--sage); text-decoration: none; transition: color 0.2s; cursor: pointer;
+    }
+    .single-crumbs a:hover { color: var(--green); }
+    .crumb-sep { opacity: 0.5; }
+    .crumb-current { color: var(--dark); font-weight: 500; }
+
+    .single-header { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 1px solid rgba(190,189,174,0.4); }
+    .single-kind {
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--green); margin-bottom: 1rem;
+    }
+    .single-title {
+      font-family: var(--font-display); font-size: clamp(2rem, 4.2vw, 3.2rem);
+      font-weight: 300; line-height: 1.15; color: var(--dark); letter-spacing: -0.01em;
+      margin-bottom: 1rem;
+    }
+    .single-meta {
+      font-size: 0.84rem; color: var(--sage); font-weight: 400;
+      margin-bottom: 1.2rem;
+    }
+    .single-dek {
+      font-family: var(--font-display); font-style: italic; font-size: clamp(1.1rem, 1.8vw, 1.35rem);
+      font-weight: 300; line-height: 1.55; color: rgba(57,52,30,0.7);
+    }
+
+    .single-body {
+      font-size: 1.06rem; line-height: 1.85; color: rgba(57,52,30,0.82); font-weight: 300;
+    }
+    .single-body p { margin-bottom: 1.3rem; }
+    .single-body h2, .single-body h3 {
+      font-family: var(--font-display); font-weight: 400; color: var(--dark);
+      margin: 2.2rem 0 0.9rem; line-height: 1.3;
+    }
+    .single-body h2 { font-size: 1.7rem; }
+    .single-body h3 { font-size: 1.35rem; }
+    .single-body strong { font-weight: 600; color: var(--dark); }
+    .single-body em { font-style: italic; }
+    .single-body a { color: var(--green); text-decoration: underline; text-underline-offset: 3px; }
+    .single-body ul, .single-body ol { margin: 0 0 1.3rem 1.3rem; }
+    .single-body li { margin-bottom: 0.5rem; }
+    .single-body blockquote {
+      border-left: 3px solid var(--green); padding: 0.25rem 0 0.25rem 1.4rem;
+      margin: 1.6rem 0; font-family: var(--font-display); font-style: italic;
+      font-size: 1.25rem; color: rgba(57,52,30,0.75); line-height: 1.5;
+    }
+
+    .single-share {
+      margin-top: 3rem; padding: 1.8rem 0;
+      border-top: 1px solid rgba(190,189,174,0.4);
+      border-bottom: 1px solid rgba(190,189,174,0.4);
+    }
+    .single-share-label {
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--sage); margin-bottom: 0.9rem;
+    }
+    .single-share-buttons {
+      display: flex; gap: 0.6rem; flex-wrap: wrap;
+    }
+    .share-btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-family: var(--font-body); font-size: 0.78rem; font-weight: 500; letter-spacing: 0.04em;
+      color: var(--dark); background: var(--white);
+      border: 1px solid rgba(190,189,174,0.6); border-radius: 3px;
+      padding: 9px 14px; cursor: pointer; text-decoration: none;
+      transition: border-color 0.2s, background 0.2s, color 0.2s, transform 0.15s;
+    }
+    .share-btn:hover { border-color: var(--green); color: var(--green); transform: translateY(-1px); }
+    .share-btn.copied { background: var(--green); color: var(--white); border-color: var(--green); }
+    .share-btn svg { flex-shrink: 0; }
+
+    .single-cta {
+      margin-top: 3rem; padding: 2rem 2.2rem;
+      background: var(--bg-off); border-radius: 8px;
+      border-left: 3px solid var(--green);
+    }
+    .single-cta h3 {
+      font-family: var(--font-display); font-size: 1.5rem; font-weight: 400; color: var(--dark);
+      margin-bottom: 0.4rem;
+    }
+    .single-cta p {
+      font-size: 0.94rem; font-weight: 300; color: rgba(57,52,30,0.7);
+      line-height: 1.7; margin-bottom: 1.2rem;
+    }
+
+    .single-related { margin-top: 3.5rem; }
+    .single-related-heading {
+      font-family: var(--font-display); font-size: 1.4rem; font-weight: 400; color: var(--dark);
+      margin-bottom: 1.2rem; padding-bottom: 0.7rem;
+      border-bottom: 1px solid rgba(190,189,174,0.4);
+    }
+    .single-related-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+      gap: 1rem;
+    }
+    .related-card {
+      display: block; text-decoration: none;
+      background: var(--white); border: 1px solid rgba(190,189,174,0.4);
+      border-radius: 6px; padding: 1.2rem 1.3rem;
+      transition: transform 0.2s var(--ease), border-color 0.2s, box-shadow 0.2s;
+    }
+    .related-card:hover {
+      transform: translateY(-3px); border-color: rgba(91,119,71,0.4);
+      box-shadow: 0 8px 24px rgba(57,52,30,0.08);
+    }
+    .related-kind {
+      font-size: 0.66rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--sage); margin-bottom: 0.5rem;
+    }
+    .related-title {
+      font-family: var(--font-display); font-size: 1.05rem; font-weight: 400; color: var(--dark);
+      line-height: 1.35; margin-bottom: 0.5rem;
+    }
+    .related-meta { font-size: 0.74rem; color: var(--sage); }
+
+    .single-not-found {
+      max-width: 600px; margin: 3rem auto; text-align: center;
+    }
+    .single-not-found .display-title { margin-top: 0.5rem; }
+
+    /* The deep-link host containers — hidden by default */
+    #resourceSingleHost,
+    #insightSingleHost { display: none; }
 
     /* ══════════════════════════════════════════
        CONTACT PAGE

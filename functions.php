@@ -3,6 +3,24 @@
  * Fortune Financial Planning — functions.php
  * Registers theme support, enqueues assets, handles SPA URL routing,
  * contact form AJAX, custom post types, and REST API endpoints.
+ *
+ * URL structure supported by this theme:
+ *   /                                  → home
+ *   /about                             → about page
+ *   /solutions                         → solutions slider
+ *   /insights                          → insights grid
+ *   /insights/{slug}                   → single insight article
+ *   /resources                         → resources overview
+ *   /resources/{category}              → category landing (retirement, investment, etc.)
+ *   /resources/{category}/{tab}        → category with tab open (articles|calculators|videos)
+ *   /resources/article/{slug}          → single article view
+ *   /resources/calculator/{slug}       → single calculator view
+ *   /resources/video/{slug}            → single video view
+ *   /contact                           → contact form
+ *
+ * All routes resolve to index.php; the JS router reads window.location.pathname
+ * and renders the correct view client-side. WP rewrite rules + a 404-fallback
+ * template filter ensure server-side 200 responses for every deep link.
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -55,7 +73,7 @@ function fortune_enqueue_assets() {
         true
     );
 
-    // Inject runtime data for JS — homeUrl used by slugFromPath() and urlForPage()
+    // Inject runtime data for JS — homeUrl used by the SPA router
     wp_localize_script( 'fortune-main', 'fortuneData', [
         'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
         'nonce'    => wp_create_nonce( 'fortune_nonce' ),
@@ -68,26 +86,34 @@ add_action( 'wp_enqueue_scripts', 'fortune_enqueue_assets' );
 
 /* ═══════════════════════════════════════════════════════
    SPA URL ROUTING — REWRITE RULES
-   Maps /about, /solutions, etc. → the front page.
-   WordPress serves the same index.php for all SPA routes;
-   the JS router then reads window.location.pathname and
-   activates the correct view.
+   Maps top-level slugs AND nested deep-link paths to index.php.
+   The JS router handles which view to display based on the full
+   path. WordPress just needs to serve a 200 for every SPA URL.
 
    IMPORTANT: After activating the theme (or changing these),
    go to Settings → Permalinks and click Save Changes once
-   to flush the rewrite rules cache.
+   to flush the rewrite rules cache. The after_switch_theme
+   hook below does this automatically on activation.
 ═══════════════════════════════════════════════════════ */
 function fortune_add_rewrite_rules() {
-    $spa_pages = [ 'about', 'solutions', 'insights', 'resources', 'contact' ];
+    // Top-level pages
+    $top_pages = [ 'about', 'solutions', 'insights', 'resources', 'contact' ];
 
-    foreach ( $spa_pages as $slug ) {
-        // Match /slug and /slug/ (trailing slash) — both point to the homepage
+    foreach ( $top_pages as $slug ) {
         add_rewrite_rule(
             '^' . preg_quote( $slug, '#' ) . '/?$',
             'index.php',
             'top'
         );
     }
+
+    // Deep links: /resources/{category}, /resources/{category}/{tab},
+    //              /resources/article/{slug}, /resources/calculator/{slug}, /resources/video/{slug}
+    add_rewrite_rule( '^resources/[^/]+/?$',          'index.php', 'top' );
+    add_rewrite_rule( '^resources/[^/]+/[^/]+/?$',    'index.php', 'top' );
+
+    // Deep links: /insights/{slug}
+    add_rewrite_rule( '^insights/[^/]+/?$',           'index.php', 'top' );
 }
 add_action( 'init', 'fortune_add_rewrite_rules' );
 
@@ -104,44 +130,43 @@ add_action( 'after_switch_theme', 'fortune_activate' );
 
 /* ═══════════════════════════════════════════════════════
    TRAILING SLASH REDIRECT
-   Converts /about/ → /about (removes trailing slash).
-   This prevents the "Forbidden" / grey screen issue that
-   some server configs show for directory-like URLs.
-   Only applies to our SPA routes, not to WP admin or files.
+   Converts /about/ → /about and /resources/retirement/ →
+   /resources/retirement (removes trailing slash). Prevents the
+   "Forbidden" / grey screen issue some server configs show for
+   directory-like URLs. Only applies to our SPA routes.
 ═══════════════════════════════════════════════════════ */
 function fortune_redirect_trailing_slash() {
-    // Don't touch admin, REST API, or actual files/directories
     if ( is_admin() ) return;
     if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) return;
 
-    $request_uri = $_SERVER['REQUEST_URI'] ?? '';
+    $path = parse_url( $_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH );
+    if ( ! $path || $path === '/' ) return;
 
-    // Only act on our known SPA slugs with a trailing slash
-    $spa_pages = [ 'about', 'solutions', 'insights', 'resources', 'contact' ];
-    foreach ( $spa_pages as $slug ) {
-        if ( preg_match( '#^/' . preg_quote( $slug, '#' ) . '/$#', parse_url( $request_uri, PHP_URL_PATH ) ) ) {
-            $clean = untrailingslashit( home_url( $slug ) );
-            wp_redirect( $clean, 301 );
-            exit;
-        }
+    // Only normalize SPA paths (not WP admin, uploads, etc.)
+    $first_seg = strtolower( explode( '/', trim( $path, '/' ) )[0] );
+    $spa_roots = [ 'about', 'solutions', 'insights', 'resources', 'contact' ];
+
+    if ( in_array( $first_seg, $spa_roots, true ) && substr( $path, -1 ) === '/' ) {
+        $clean = home_url( rtrim( $path, '/' ) );
+        wp_redirect( $clean, 301 );
+        exit;
     }
 }
 add_action( 'template_redirect', 'fortune_redirect_trailing_slash' );
 
 
 /* ═══════════════════════════════════════════════════════
-   ENSURE HOMEPAGE IS ALWAYS SERVED FOR SPA ROUTES
-   When WP's query resolves to a 404 for /about etc.,
-   force it to serve the front page template instead.
+   ENSURE HOMEPAGE TEMPLATE IS SERVED FOR SPA ROUTES
+   When WP's query resolves to a 404 for any SPA path,
+   force it to serve the front page template with a 200.
 ═══════════════════════════════════════════════════════ */
 function fortune_spa_template( $template ) {
     if ( is_404() ) {
-        $spa_pages = [ 'about', 'solutions', 'insights', 'resources', 'contact' ];
         $path      = trim( parse_url( $_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH ), '/' );
-        $slug      = strtolower( explode( '/', $path )[0] );
+        $first_seg = strtolower( explode( '/', $path )[0] );
+        $spa_roots = [ 'about', 'solutions', 'insights', 'resources', 'contact' ];
 
-        if ( in_array( $slug, $spa_pages, true ) ) {
-            // Serve the front page template with a 200 status
+        if ( in_array( $first_seg, $spa_roots, true ) ) {
             status_header( 200 );
             $front = get_template_directory() . '/index.php';
             return file_exists( $front ) ? $front : $template;
@@ -155,10 +180,16 @@ add_filter( 'template_include', 'fortune_spa_template', 99 );
 /* ═══════════════════════════════════════════════════════
    DYNAMIC <title> TAG FOR SPA ROUTES
    Sets a sensible page title for each URL so browser tabs,
-   bookmarks, and share previews show the right text.
+   bookmarks, and link previews show meaningful text.
 ═══════════════════════════════════════════════════════ */
 function fortune_spa_title( $title ) {
-    $spa_titles = [
+    $path  = trim( parse_url( $_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH ), '/' );
+    if ( ! $path ) return $title;
+
+    $segs  = array_map( 'strtolower', explode( '/', $path ) );
+    $site  = get_bloginfo( 'name' );
+
+    $top_titles = [
         'about'     => 'About Us',
         'solutions' => 'Solutions',
         'insights'  => 'Insights',
@@ -166,15 +197,37 @@ function fortune_spa_title( $title ) {
         'contact'   => 'Contact',
     ];
 
-    $path = trim( parse_url( $_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH ), '/' );
-    $slug = strtolower( explode( '/', $path )[0] );
+    $cat_titles = [
+        'retirement' => 'Retirement',
+        'investment' => 'Investment',
+        'estate'     => 'Estate Planning',
+        'insurance'  => 'Insurance',
+        'tax'        => 'Tax Planning',
+        'lifestyle'  => 'Lifestyle',
+        'calc'       => 'All Calculators',
+        'videos'     => 'All Videos',
+    ];
 
-    if ( isset( $spa_titles[ $slug ] ) ) {
-        $site = get_bloginfo( 'name' );
-        return $spa_titles[ $slug ] . ' — ' . $site;
+    if ( ! isset( $top_titles[ $segs[0] ] ) ) return $title;
+
+    $parts = [ $top_titles[ $segs[0] ] ];
+
+    // /resources/{category}
+    if ( $segs[0] === 'resources' && isset( $segs[1] ) ) {
+        if ( in_array( $segs[1], [ 'article', 'calculator', 'video' ], true ) && isset( $segs[2] ) ) {
+            // /resources/article/{slug} — humanize slug
+            $parts[] = ucwords( str_replace( '-', ' ', $segs[2] ) );
+        } elseif ( isset( $cat_titles[ $segs[1] ] ) ) {
+            $parts[] = $cat_titles[ $segs[1] ];
+        }
     }
 
-    return $title;
+    // /insights/{slug}
+    if ( $segs[0] === 'insights' && isset( $segs[1] ) ) {
+        $parts[] = ucwords( str_replace( '-', ' ', $segs[1] ) );
+    }
+
+    return implode( ' — ', array_reverse( $parts ) ) . ' · ' . $site;
 }
 add_filter( 'pre_get_document_title', 'fortune_spa_title' );
 
@@ -334,6 +387,7 @@ function fortune_rest_get_insights( WP_REST_Request $request ) {
         $categories = wp_get_post_terms( $post->ID, 'insight_category', [ 'fields' => 'names' ] );
         $posts[] = [
             'id'       => $post->ID,
+            'slug'     => $post->post_name,
             'title'    => get_the_title( $post ),
             'excerpt'  => get_the_excerpt( $post ),
             'date'     => get_the_date( 'M j, Y', $post ),

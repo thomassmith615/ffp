@@ -1,3 +1,24 @@
+<?php
+/**
+ * Resources partial — page-resources.php
+ *
+ * Routing this page supports:
+ *   /resources                         → overview tab
+ *   /resources/{category}              → category tab open
+ *   /resources/{category}/{tab}        → category with inner tab open
+ *   /resources/article/{slug}          → full single-article view
+ *   /resources/calculator/{slug}       → calculator view
+ *   /resources/video/{slug}            → video view
+ *
+ * Each <li> in the article/calculator/video lists carries
+ *   data-resource-slug="…" data-resource-kind="…"
+ * which the JS router intercepts to navigate without a page reload
+ * AND update the URL bar to a shareable deep link.
+ *
+ * The article copy itself lives in assets/js/main.js → RESOURCE_LIBRARY.
+ * To add a new article: add an entry there with a matching slug.
+ */
+?>
 <div id="page-resources" class="page-view">
   <div class="resources-hero page-hero">
     <div class="page-hero-inner">
@@ -9,6 +30,10 @@
 
   <div class="section">
     <div class="section-inner">
+
+      <!-- Single-item host (article/calculator/video full view) -->
+      <div id="resourceSingleHost"></div>
+
       <!-- Top-level tabs -->
       <div class="resources-tabs">
         <button class="res-tab active" data-res="overview" onclick="setResTab('overview')">Overview</button>
@@ -51,15 +76,15 @@
           </div>
         </div>
         <div class="cat-tabs">
-          <button class="cat-tab active" onclick="setCatTab('retirement','articles')">Articles</button>
-          <button class="cat-tab" onclick="setCatTab('retirement','calculators')">Calculators</button>
-          <button class="cat-tab" onclick="setCatTab('retirement','videos')">Videos</button>
+          <button class="cat-tab active" data-tab="articles" onclick="setCatTab('retirement','articles')">Articles</button>
+          <button class="cat-tab" data-tab="calculators" onclick="setCatTab('retirement','calculators')">Calculators</button>
+          <button class="cat-tab" data-tab="videos" onclick="setCatTab('retirement','videos')">Videos</button>
         </div>
         <div class="cat-panel active" id="retirement-articles">
           <ul class="linked-list">
-            <li><span>'Tis the Season of RMDs</span><span class="ll-arrow">›</span></li>
-            <li><span>Social Security: When Should You Claim?</span><span class="ll-arrow">›</span></li>
-            <li><span>Inflation and Your Retirement</span><span class="ll-arrow">›</span></li>
+            <li data-resource-slug="tis-the-season-of-rmds" data-resource-kind="article"><span>'Tis the Season of RMDs</span><span class="ll-arrow">›</span></li>
+            <li data-resource-slug="social-security-when-to-claim" data-resource-kind="article"><span>Social Security: When Should You Claim?</span><span class="ll-arrow">›</span></li>
+            <li data-resource-slug="inflation-and-your-retirement" data-resource-kind="article"><span>Inflation and Your Retirement</span><span class="ll-arrow">›</span></li>
             <li><span>The 4% Rule — Is It Still Valid?</span><span class="ll-arrow">›</span></li>
             <li><span>Roth vs. Traditional: Which Is Right for You?</span><span class="ll-arrow">›</span></li>
           </ul>
@@ -67,7 +92,7 @@
         </div>
         <div class="cat-panel" id="retirement-calculators">
           <ul class="linked-list">
-            <li><span>Saving for Retirement</span><span class="ll-arrow">›</span></li>
+            <li data-resource-slug="saving-for-retirement" data-resource-kind="calculator"><span>Saving for Retirement</span><span class="ll-arrow">›</span></li>
             <li><span>My Retirement Savings</span><span class="ll-arrow">›</span></li>
             <li><span>Roth 401(k) vs. Traditional 401(k)</span><span class="ll-arrow">›</span></li>
             <li><span>Inflation &amp; Retirement</span><span class="ll-arrow">›</span></li>
@@ -80,7 +105,7 @@
         </div>
         <div class="cat-panel" id="retirement-videos">
           <ul class="linked-list">
-            <li><span>Retirement Income 101</span><span class="ll-arrow">›</span></li>
+            <li data-resource-slug="retirement-income-101" data-resource-kind="video"><span>Retirement Income 101</span><span class="ll-arrow">›</span></li>
             <li><span>Understanding Required Minimum Distributions</span><span class="ll-arrow">›</span></li>
           </ul>
           <span class="view-all-link" onclick="setResTab('videos')">View All Videos →</span>
@@ -105,14 +130,14 @@
           </div>
         </div>
         <div class="cat-tabs">
-          <button class="cat-tab active" onclick="setCatTab('investment','articles')">Articles</button>
-          <button class="cat-tab" onclick="setCatTab('investment','calculators')">Calculators</button>
-          <button class="cat-tab" onclick="setCatTab('investment','videos')">Videos</button>
+          <button class="cat-tab active" data-tab="articles" onclick="setCatTab('investment','articles')">Articles</button>
+          <button class="cat-tab" data-tab="calculators" onclick="setCatTab('investment','calculators')">Calculators</button>
+          <button class="cat-tab" data-tab="videos" onclick="setCatTab('investment','videos')">Videos</button>
         </div>
         <div class="cat-panel active" id="investment-articles">
           <ul class="linked-list">
-            <li><span>Investing Through Election Cycles</span><span class="ll-arrow">›</span></li>
-            <li><span>Investment Classroom: Bond Basics</span><span class="ll-arrow">›</span></li>
+            <li data-resource-slug="investing-through-election-cycles" data-resource-kind="article"><span>Investing Through Election Cycles</span><span class="ll-arrow">›</span></li>
+            <li data-resource-slug="investment-classroom-bond-basics" data-resource-kind="article"><span>Investment Classroom: Bond Basics</span><span class="ll-arrow">›</span></li>
             <li><span>Understanding Asset Allocation</span><span class="ll-arrow">›</span></li>
             <li><span>The Power of Compounding</span><span class="ll-arrow">›</span></li>
             <li><span>Dollar-Cost Averaging Explained</span><span class="ll-arrow">›</span></li>
@@ -122,7 +147,7 @@
         <div class="cat-panel" id="investment-calculators">
           <ul class="linked-list">
             <li><span>Taxable vs. Tax-Deferred Savings</span><span class="ll-arrow">›</span></li>
-            <li><span>How Compound Interest Works</span><span class="ll-arrow">›</span></li>
+            <li data-resource-slug="compound-interest" data-resource-kind="calculator"><span>How Compound Interest Works</span><span class="ll-arrow">›</span></li>
             <li><span>What Is My Risk Tolerance?</span><span class="ll-arrow">›</span></li>
             <li><span>What Is the Dividend Yield?</span><span class="ll-arrow">›</span></li>
             <li><span>Impact of Taxes and Inflation</span><span class="ll-arrow">›</span></li>
@@ -157,13 +182,13 @@
           </div>
         </div>
         <div class="cat-tabs">
-          <button class="cat-tab active" onclick="setCatTab('estate','articles')">Articles</button>
-          <button class="cat-tab" onclick="setCatTab('estate','calculators')">Calculators</button>
-          <button class="cat-tab" onclick="setCatTab('estate','videos')">Videos</button>
+          <button class="cat-tab active" data-tab="articles" onclick="setCatTab('estate','articles')">Articles</button>
+          <button class="cat-tab" data-tab="calculators" onclick="setCatTab('estate','calculators')">Calculators</button>
+          <button class="cat-tab" data-tab="videos" onclick="setCatTab('estate','videos')">Videos</button>
         </div>
         <div class="cat-panel active" id="estate-articles">
           <ul class="linked-list">
-            <li><span>Year-End Charitable Gifting and You</span><span class="ll-arrow">›</span></li>
+            <li data-resource-slug="year-end-charitable-gifting" data-resource-kind="article"><span>Year-End Charitable Gifting and You</span><span class="ll-arrow">›</span></li>
             <li><span>Understanding the Estate Tax</span><span class="ll-arrow">›</span></li>
             <li><span>Beneficiary Designations: Don't Overlook Them</span><span class="ll-arrow">›</span></li>
             <li><span>Trusts 101: Which Type Is Right for You?</span><span class="ll-arrow">›</span></li>
@@ -174,7 +199,7 @@
           <ul class="linked-list">
             <li><span>What Is My Life Expectancy?</span><span class="ll-arrow">›</span></li>
             <li><span>What Is My Current Net Worth?</span><span class="ll-arrow">›</span></li>
-            <li><span>What's My Potential Estate Tax?</span><span class="ll-arrow">›</span></li>
+            <li data-resource-slug="estate-tax" data-resource-kind="calculator"><span>What's My Potential Estate Tax?</span><span class="ll-arrow">›</span></li>
           </ul>
           <span class="view-all-link" onclick="setResTab('calc')">View All Calculators →</span>
         </div>
@@ -204,13 +229,13 @@
           </div>
         </div>
         <div class="cat-tabs">
-          <button class="cat-tab active" onclick="setCatTab('insurance','articles')">Articles</button>
-          <button class="cat-tab" onclick="setCatTab('insurance','calculators')">Calculators</button>
-          <button class="cat-tab" onclick="setCatTab('insurance','videos')">Videos</button>
+          <button class="cat-tab active" data-tab="articles" onclick="setCatTab('insurance','articles')">Articles</button>
+          <button class="cat-tab" data-tab="calculators" onclick="setCatTab('insurance','calculators')">Calculators</button>
+          <button class="cat-tab" data-tab="videos" onclick="setCatTab('insurance','videos')">Videos</button>
         </div>
         <div class="cat-panel active" id="insurance-articles">
           <ul class="linked-list">
-            <li><span>How Much Life Insurance Do You Really Need?</span><span class="ll-arrow">›</span></li>
+            <li data-resource-slug="how-much-life-insurance" data-resource-kind="article"><span>How Much Life Insurance Do You Really Need?</span><span class="ll-arrow">›</span></li>
             <li><span>Long-Term Care: Planning Before You Need It</span><span class="ll-arrow">›</span></li>
             <li><span>Disability Insurance: Your Most Overlooked Asset</span><span class="ll-arrow">›</span></li>
             <li><span>Term vs. Permanent Life Insurance</span><span class="ll-arrow">›</span></li>
@@ -252,13 +277,13 @@
           </div>
         </div>
         <div class="cat-tabs">
-          <button class="cat-tab active" onclick="setCatTab('tax','articles')">Articles</button>
-          <button class="cat-tab" onclick="setCatTab('tax','calculators')">Calculators</button>
-          <button class="cat-tab" onclick="setCatTab('tax','videos')">Videos</button>
+          <button class="cat-tab active" data-tab="articles" onclick="setCatTab('tax','articles')">Articles</button>
+          <button class="cat-tab" data-tab="calculators" onclick="setCatTab('tax','calculators')">Calculators</button>
+          <button class="cat-tab" data-tab="videos" onclick="setCatTab('tax','videos')">Videos</button>
         </div>
         <div class="cat-panel active" id="tax-articles">
           <ul class="linked-list">
-            <li><span>Roth Conversions: Is Now the Right Time?</span><span class="ll-arrow">›</span></li>
+            <li data-resource-slug="roth-conversions-timing" data-resource-kind="article"><span>Roth Conversions: Is Now the Right Time?</span><span class="ll-arrow">›</span></li>
             <li><span>Year-End Tax Planning Checklist</span><span class="ll-arrow">›</span></li>
             <li><span>Capital Gains: Short vs. Long-Term</span><span class="ll-arrow">›</span></li>
             <li><span>Tax-Loss Harvesting Explained</span><span class="ll-arrow">›</span></li>
@@ -300,14 +325,14 @@
           </div>
         </div>
         <div class="cat-tabs">
-          <button class="cat-tab active" onclick="setCatTab('lifestyle','articles')">Articles</button>
-          <button class="cat-tab" onclick="setCatTab('lifestyle','calculators')">Calculators</button>
-          <button class="cat-tab" onclick="setCatTab('lifestyle','videos')">Videos</button>
+          <button class="cat-tab active" data-tab="articles" onclick="setCatTab('lifestyle','articles')">Articles</button>
+          <button class="cat-tab" data-tab="calculators" onclick="setCatTab('lifestyle','calculators')">Calculators</button>
+          <button class="cat-tab" data-tab="videos" onclick="setCatTab('lifestyle','videos')">Videos</button>
         </div>
         <div class="cat-panel active" id="lifestyle-articles">
           <ul class="linked-list">
-            <li><span>Keeping Up with the Joneses</span><span class="ll-arrow">›</span></li>
-            <li><span>Mortgages in Retirement</span><span class="ll-arrow">›</span></li>
+            <li data-resource-slug="keeping-up-with-the-joneses" data-resource-kind="article"><span>Keeping Up with the Joneses</span><span class="ll-arrow">›</span></li>
+            <li data-resource-slug="mortgages-in-retirement" data-resource-kind="article"><span>Mortgages in Retirement</span><span class="ll-arrow">›</span></li>
             <li><span>Saving for College 101</span><span class="ll-arrow">›</span></li>
             <li><span>Pay Yourself First</span><span class="ll-arrow">›</span></li>
             <li><span>Building a Solid Financial Foundation</span><span class="ll-arrow">›</span></li>
@@ -346,7 +371,7 @@
             <div class="calc-section-title">Retirement</div>
             <ul class="calc-list">
               <li><span>A Look at Systematic Withdrawals</span><span class="calc-arrow">›</span></li>
-              <li><span>Saving for Retirement</span><span class="calc-arrow">›</span></li>
+              <li data-resource-slug="saving-for-retirement" data-resource-kind="calculator"><span>Saving for Retirement</span><span class="calc-arrow">›</span></li>
               <li><span>My Retirement Savings</span><span class="calc-arrow">›</span></li>
               <li><span>Roth 401(k) vs. Traditional 401(k)</span><span class="calc-arrow">›</span></li>
               <li><span>Inflation &amp; Retirement</span><span class="calc-arrow">›</span></li>
@@ -360,7 +385,7 @@
             <div class="calc-section-title">Investment</div>
             <ul class="calc-list">
               <li><span>Taxable vs. Tax-Deferred Savings</span><span class="calc-arrow">›</span></li>
-              <li><span>How Compound Interest Works</span><span class="calc-arrow">›</span></li>
+              <li data-resource-slug="compound-interest" data-resource-kind="calculator"><span>How Compound Interest Works</span><span class="calc-arrow">›</span></li>
               <li><span>What Is My Risk Tolerance?</span><span class="calc-arrow">›</span></li>
               <li><span>What Is the Dividend Yield?</span><span class="calc-arrow">›</span></li>
               <li><span>Impact of Taxes and Inflation</span><span class="calc-arrow">›</span></li>
@@ -371,7 +396,7 @@
             <ul class="calc-list">
               <li><span>What Is My Life Expectancy?</span><span class="calc-arrow">›</span></li>
               <li><span>What Is My Current Net Worth?</span><span class="calc-arrow">›</span></li>
-              <li><span>What's My Potential Estate Tax?</span><span class="calc-arrow">›</span></li>
+              <li data-resource-slug="estate-tax" data-resource-kind="calculator"><span>What's My Potential Estate Tax?</span><span class="calc-arrow">›</span></li>
             </ul>
           </div>
           <div class="calc-section">
@@ -417,7 +442,7 @@
           <p>Short, informative videos from our team covering key financial topics. Content added regularly.</p>
         </div>
         <ul class="linked-list">
-          <li><span>Retirement Income 101</span><span class="ll-arrow">›</span></li>
+          <li data-resource-slug="retirement-income-101" data-resource-kind="video"><span>Retirement Income 101</span><span class="ll-arrow">›</span></li>
           <li><span>Understanding Required Minimum Distributions</span><span class="ll-arrow">›</span></li>
           <li><span>Surprise! You've Got Money!</span><span class="ll-arrow">›</span></li>
           <li><span>What Is Diversification?</span><span class="ll-arrow">›</span></li>

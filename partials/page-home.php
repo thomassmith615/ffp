@@ -2,7 +2,13 @@
 
   <section id="hero">
     <div class="hero-bg">
-      <video autoplay muted loop playsinline onerror="this.style.display='none'">
+      <!--
+        Video sized via .hero-bg video CSS (object-fit: cover, centered).
+        The pexels download endpoint can be unreliable; if the video fails
+        to load the gradient background underneath shows through.
+        Replace src with a self-hosted /assets/video/hero.mp4 for production.
+      -->
+      <video id="heroVideo" autoplay muted loop playsinline preload="auto">
         <source src="https://www.pexels.com/download/video/3209829/" type="video/mp4">
       </video>
     </div>
@@ -12,8 +18,8 @@
       <h1 class="hero-title">Your Wealth.<br><em>Your Legacy.</em><br>Our Purpose.</h1>
       <p class="hero-sub">Helping individuals, families, and business owners make conscious, deliberate financial decisions — not leaving things to chance.</p>
       <div class="hero-actions">
-        <button class="btn btn-green" onclick="goTo('contact')">Schedule a Consultation</button>
-        <button class="btn btn-outline-light" onclick="goTo('solutions')">Explore Our Solutions</button>
+        <a class="btn btn-green" href="/contact" data-route data-page="contact">Schedule a Consultation</a>
+        <a class="btn btn-outline-light" href="/solutions" data-route data-page="solutions">Explore Our Solutions</a>
       </div>
     </div>
     <div class="hero-scroll-hint" onclick="document.getElementById('home-purpose').scrollIntoView({behavior:'smooth'})">
@@ -28,7 +34,7 @@
       <p class="eyebrow reveal">Our Promise</p>
       <h2 class="display-title reveal d1" style="color:var(--white)">Caring for <em style="color:var(--tan)">people</em><br>comes first</h2>
       <p class="body-copy reveal d2" style="color:rgba(255,255,255,0.6); max-width:480px">Our founder made a promise before entering financial services: help people first, make money second. That commitment shapes every recommendation we make and every relationship we build.</p>
-      <button class="btn btn-outline-light reveal d3" style="margin-top:1.8rem" onclick="goTo('about')">Meet the Team</button>
+      <a class="btn btn-outline-light reveal d3" style="margin-top:1.8rem" href="/about" data-route data-page="about">Meet the Team</a>
     </div>
     <blockquote class="purpose-quote reveal d2">"Help people first,<br>make money second."</blockquote>
   </div>
@@ -66,7 +72,7 @@
         </div>
       </div>
       <div style="text-align:center;margin-top:2.2rem">
-        <button class="btn btn-green reveal d3" onclick="goTo('solutions')">View All Solutions</button>
+        <a class="btn btn-green reveal d3" href="/solutions" data-route data-page="solutions">View All Solutions</a>
       </div>
     </div>
   </div>
@@ -154,7 +160,7 @@
   <div style="background:var(--green);padding:clamp(3rem,6vw,5rem) clamp(2rem,6vw,5rem);text-align:center">
     <h2 class="reveal" style="font-family:var(--font-display);font-size:clamp(1.9rem,3.5vw,3.1rem);font-weight:300;color:var(--white);margin-bottom:0.8rem">Financial clarity is closer than you think</h2>
     <p class="reveal d1" style="font-size:1rem;font-weight:300;color:rgba(255,255,255,0.75);margin-bottom:2rem">Schedule a no-pressure 15-minute introductory call and take the first step.</p>
-    <button class="btn reveal d2" style="background:var(--white);color:var(--green);font-weight:600" onclick="goTo('contact')">Schedule a Consultation</button>
+    <a class="btn reveal d2" style="background:var(--white);color:var(--green);font-weight:600" href="/contact" data-route data-page="contact">Schedule a Consultation</a>
   </div>
 
 
