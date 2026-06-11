@@ -1,14 +1,10 @@
 # Fortune Financial Planning — WordPress Theme
 
-A custom, production-deployed WordPress theme for [Fortune Financial Planning](https://fortunefinancialplanning.com), a South Jersey fiduciary advisory firm affiliated with LPL Financial.
+A custom WordPress theme for [Fortune Financial Planning](https://fortunefinancialplanning.com), a South Jersey fiduciary advisory firm affiliated with LPL Financial.
 
-Built from scratch as a single-page application (SPA) inside WordPress — no page builder, no template framework.
+**v2.0** rebuilds the theme as a traditional, fully server-rendered multi-template WordPress theme. The v1.x single-page-app shell (all pages in one `index.php`, JS show/hide router, content stored in JavaScript) is gone — every view is now a real URL rendered by PHP.
 
----
-
-## Live Site
-
-> fortunefinancialplanning.com
+> Site copy is placeholder wording pending final content from FFP. Colors, fonts, and light theme are locked to the FFP palette.
 
 ---
 
@@ -17,81 +13,36 @@ Built from scratch as a single-page application (SPA) inside WordPress — no pa
 | Layer | Details |
 |---|---|
 | CMS | WordPress 6.x (custom theme, no page builder) |
-| Frontend | Vanilla JS, CSS custom properties, no framework |
-| Routing | Client-side SPA router with `history.pushState`, deep-link support |
+| Frontend | Server-rendered PHP templates, vanilla JS for progressive enhancement only |
+| Routing | WordPress rewrite rules + custom query vars (no client-side router) |
+| Content | PHP content library (`data/resources.php`) + `insight` custom post type |
 | Fonts | Google Fonts — Cormorant Garamond + DM Sans |
-| Backend | PHP 8, WordPress AJAX API, WP REST API |
-| Auth | WordPress nonce-based CSRF protection |
-| Email | `wp_mail()` + WP Mail SMTP |
+| Email | `wp_mail()` via admin-ajax (pair with WP Mail SMTP in production) |
 
 ---
 
-## URL Structure (v1.1)
+## URL Structure
 
-Every meaningful view has its own shareable URL:
+Every view is a shareable, server-rendered URL with a proper `<title>`, meta description, canonical link, and Open Graph tags:
 
 | URL | View |
 |---|---|
 | `/` | Home |
-| `/about` | About / Team |
-| `/solutions` | Solutions slider |
-| `/insights` | Insights index |
-| `/insights/{slug}` | Single insight article |
-| `/resources` | Resources overview |
-| `/resources/{category}` | Category tab (retirement, investment, estate, insurance, tax, lifestyle, calc, videos) |
-| `/resources/{category}/{tab}` | Category + inner tab (articles / calculators / videos) |
-| `/resources/article/{slug}` | Single article view (with share buttons) |
-| `/resources/calculator/{slug}` | Single calculator view |
-| `/resources/video/{slug}` | Single video view |
-| `/contact` | Contact form |
+| `/about/` | About / team |
+| `/solutions/` | Solutions (each section anchor-linkable, e.g. `/solutions/#retirement-income`) |
+| `/insights/` | Insights editorial feed |
+| `/insights/{slug}/` | Single insight (static library or `insight` post) |
+| `/resources/` | Resources index |
+| `/resources/{category}/` | Category — retirement, investment, estate, insurance, tax, lifestyle |
+| `/resources/{category}/{tab}/` | Category with calculators or videos tab open |
+| `/resources/calculators/` | All calculators, grouped by category |
+| `/resources/videos/` | All videos |
+| `/resources/article/{slug}/` | Single article (breadcrumbs, share toolbar, related reading) |
+| `/resources/calculator/{slug}/` | Single calculator |
+| `/resources/video/{slug}/` | Single video |
+| `/contact/` | Contact form |
 
-Trailing slashes are normalized server-side. Every view returns HTTP 200 — copy/paste any URL into a chat or LinkedIn post and it loads correctly.
-
----
-
-## Features
-
-**Deep-Link SPA Routing**
-- Client-side router with `history.pushState` / `popstate` for native back/forward navigation
-- Every article, calculator, and video has its own URL — shareable on LinkedIn, email, SMS, anywhere
-- WordPress rewrite rules + `template_include` filter ensure server-side 200 responses for all SPA routes
-- Subdirectory install support via `fortuneData.homeUrl`
-- Right-click "Copy Link Address" on any nav element works correctly (real `href` attributes)
-
-**Single-Article View**
-- Breadcrumb trail: Resources → Category → Article
-- Built-in share toolbar: copy link (clipboard API), LinkedIn post, email
-- Related-articles grid drawn from the same category
-- Inline CTA box with link to /contact
-
-**Contact Form**
-- WordPress AJAX handler (`wp_ajax_fortune_contact`) with nonce verification
-- Sanitized with `sanitize_text_field`, `sanitize_email`, `sanitize_textarea_field`
-- `wp_mail()` delivery with Reply-To header
-- Inline success/error feedback injected into the DOM without a page reload
-
-**Insights / Blog**
-- Custom post type (`insight`) with custom taxonomy (`insight_category`)
-- REST API endpoint at `/wp-json/fortune/v1/insights` with pagination and category filtering
-- "Show All" button fetches additional posts dynamically; gracefully falls back to static HTML if the API is unavailable
-
-**Solutions Slideshow**
-- Touch/swipe support via `touchstart` / `touchend`
-- CSS transitions between slides with no JS animation library
-
-**Scroll Reveal**
-- `IntersectionObserver`-based reveal system for staggered entrance animations
-- Trigger delay classes (`d1`–`d5`) for sequenced reveals per section
-
-**Custom Post Types**
-- `insight` — blog/articles with REST API support
-- `team_member` — advisor profiles
-- `testimonial` — client reviews (non-public, admin-only)
-
-**Performance & SEO**
-- Removes WordPress emoji scripts, generator tag, RSD/WLW links from `<head>`
-- Dynamic `<title>` tag per SPA route via `pre_get_document_title` filter (nested: "Article — Category — Resources · Site")
-- Theme activation flushes rewrite rules automatically
+Unknown slugs return genuine 404s. The legacy `/resources/calc` URL 301-redirects to `/resources/calculators/`.
 
 ---
 
@@ -99,89 +50,85 @@ Trailing slashes are normalized server-side. Every view returns HTTP 200 — cop
 
 ```
 ffp/
-├── style.css                   # Theme metadata (WordPress requirement)
-├── index.php                   # SPA shell — loads all page partials
-├── header.php                  # <head>, nav, mobile drawer (routed links)
-├── footer.php                  # wp_footer() hook
-├── functions.php               # Theme setup, enqueue, rewrites, AJAX, CPTs, REST API
+├── style.css                    Theme metadata
+├── functions.php                Slim bootstrap — requires the inc/ modules
+├── header.php / footer.php      Site chrome (server-rendered nav state, full footer)
+├── front-page.php               Home
+├── page-about.php               About (auto-applies to the "about" page slug)
+├── page-solutions.php           Solutions — editorial sections + sticky anchor sub-nav
+├── page-insights.php            Insights — feed and single views
+├── page-resources.php           Resources — dispatches overview / category / single
+├── 404.php / index.php          Not-found + generic fallback
+├── inc/
+│   ├── setup.php                Theme supports, activation (auto-creates pages, flushes rewrites), assets
+│   ├── library.php              Content library access + URL builders (ffp_* helpers)
+│   ├── routing.php              Rewrite rules, route validation, titles, social meta
+│   ├── post-types.php           insight / team_member / testimonial CPTs
+│   ├── contact.php              Contact form AJAX handler
+│   └── template-tags.php        Breadcrumbs, share buttons, list renderers
+├── data/
+│   └── resources.php            ALL site content: articles, calculators, videos, categories
+├── template-parts/
+│   ├── resources-overview.php   Editorial index of categories
+│   ├── resources-category.php   Category view with tab URLs
+│   ├── resources-all-calculators.php / resources-all-videos.php
+│   ├── single-item.php          Single article/calculator/video shell
+│   └── single-post.php          Single `insight` post shell
 ├── assets/
-│   ├── css/main.css            # All styles (~1100 lines, single-article view included)
-│   └── js/main.js              # Router, slider, forms, reveal, RESOURCE_LIBRARY (~900 lines)
-└── partials/
-    ├── page-home.php           # Hero (with object-fit:cover video fix), services, testimonials, CTA
-    ├── page-about.php          # Team grid with placeholder/photo support
-    ├── page-solutions.php      # Swipeable 6-slide solution showcase
-    ├── page-insights.php       # Article grid + single-article host + dynamic WP REST expansion
-    ├── page-resources.php      # Tabbed resource center (8 categories) + single-article host
-    ├── page-contact.php        # AJAX contact form
-    └── shared-footer.php       # Shared footer with routed topic links + live copyright year
+│   ├── css/main.css             All styles
+│   └── js/main.js               Drawer, reveal, scrollspy, share, contact AJAX (~200 lines)
+└── blueprint.json               WordPress Playground config for local preview
 ```
 
 ---
 
-## WordPress Installation
+## How Routing Works
 
-1. Zip the `ffp/` folder and upload via **Appearance → Themes → Add New → Upload Theme**
-2. Activate the theme — rewrite rules flush automatically on activation
-3. Go to **Settings → Permalinks** and click **Save Changes** once to make absolutely sure the rules are written
-4. Go to **Pages → Add New**, create a page titled "Home", publish it
-5. Go to **Settings → Reading** → set homepage to the static "Home" page
-6. Install **WP Mail SMTP** and configure your mail provider for reliable contact form delivery
-7. Add articles via **Insights → Add New** in the WP admin sidebar
+1. `inc/routing.php` registers rewrite rules that map deep paths onto the Resources/Insights *pages* with extra query vars (`ffp_category`, `ffp_tab`, `ffp_kind`, `ffp_slug`).
+2. The page templates read those vars and render the right view server-side.
+3. Routes are validated on the `wp` hook — unknown slugs/categories become real 404s.
+4. `redirect_canonical` is suppressed for routed URLs so WP doesn't bounce them back to the bare page permalink.
+5. Rewrite rules are flushed automatically on theme activation. If routes ever 404 after editing the rules, re-save **Settings → Permalinks** once.
 
----
-
-## Adding New Articles
-
-The fastest way is to add to the in-JS `RESOURCE_LIBRARY` (in `assets/js/main.js`):
-
-```js
-'my-new-article-slug': {
-  title: 'My New Article Title',
-  category: 'retirement',          // retirement|investment|estate|insurance|tax|lifestyle
-  kind: 'article',                 // article|calculator|video
-  author: 'Kevin J. Gianfortune',
-  date: 'Jan 15, 2025',
-  dek: 'One-sentence summary shown under the title.',
-  body: `
-    <p>First paragraph...</p>
-    <h2>A Subheading</h2>
-    <p>More content...</p>
-    <blockquote>An optional pullquote.</blockquote>
-  `
-},
-```
-
-Then add a matching `<li data-resource-slug="my-new-article-slug" data-resource-kind="article">` entry in the appropriate category panel of `partials/page-resources.php`.
-
-For longer-term content management, you can also create new posts under the `insight` custom post type in WP admin — they appear automatically in the Insights page via the REST API.
+`insight` posts created in WP admin publish at `/insights/{post-slug}/` through the same route (the template checks the static library first, then falls back to a CPT lookup).
 
 ---
 
-## Sharing & Social
+## Adding Content
 
-When a user views any article, the share toolbar offers:
-- **Copy Link** — copies the canonical URL to clipboard with a "Copied!" confirmation
-- **LinkedIn** — opens LinkedIn's share intent prefilled with the article URL
-- **Email** — opens the default mail client with subject and link prefilled
+**Articles / calculators / videos** — add an entry to `data/resources.php`. Items with a `body` are routable and linkable everywhere automatically (category lists, counts, related reading, the Insights feed if `insight_tag` is set). Items without a `body` are listed as "coming soon".
 
-LinkedIn link example for a blog post:
-```
-https://www.linkedin.com/sharing/share-offsite/?url=https://fortunefinancialplanning.com/resources/article/social-security-when-to-claim
-```
+**Insights via WP admin** — Insights → Add New. Title, content, excerpt, and an Insight Category. The post appears in the feed automatically and publishes at `/insights/{slug}/`.
+
+**Team members / testimonials** — CPTs are registered for future admin management; the About page currently uses static markup.
 
 ---
 
 ## Local Development
 
-No build step required. Open `index.html` in a browser for a static preview, or run a standard local WordPress environment (LocalWP, MAMP, etc.) and drop the theme into `wp-content/themes/`.
+No build step. Preview in WordPress Playground:
+
+```bash
+npx @wp-playground/cli@latest server \
+  --blueprint=blueprint.json \
+  --mount=.:/wordpress/wp-content/themes/ffp \
+  --site-options.theme=ffp
+```
+
+(or any local WP — LocalWP, MAMP — with the theme dropped into `wp-content/themes/`).
+
+## Production Install
+
+1. Zip the theme folder and upload via **Appearance → Themes → Add New → Upload Theme**
+2. Activate — pages (Home, About, Solutions, Insights, Resources, Contact) are created automatically, the front page is assigned, and rewrite rules flush
+3. Install **WP Mail SMTP** and connect a mail provider so the contact form delivers reliably
+4. Replace the hero video source in `front-page.php` with a self-hosted file
 
 ---
 
 ## Notes
 
-- The SPA router handles subdirectory WordPress installs — `fortuneData.homeUrl` (injected via `wp_localize_script`) is used to strip the base path before slug matching
-- Trailing slash redirects are handled server-side via `template_redirect` to prevent "Forbidden" responses on directory-style URLs
-- LPL Financial compliance disclosures are included in the footer and resource pages as required
-- All user-supplied data rendered in JS goes through a custom `_esc()` function to prevent XSS
-- The hero video uses `object-fit: cover` to scale and center properly at any aspect ratio; if the video fails to load, the gradient background underneath shows through gracefully
+- LPL Financial compliance disclosures are included in the footer and the tax resource category as required.
+- Single articles include a share toolbar (copy link via clipboard/Web Share API, LinkedIn intent, mailto).
+- The hero video uses `object-fit: cover`; if it fails to load, the gradient background shows through.
+- Dynamic titles/descriptions for routed views come from the content library via `document_title_parts` — no slug-humanizing.

@@ -1,25 +1,32 @@
 <?php
 /**
- * index.php — Main SPA shell template.
- * All page content is rendered client-side from the JS router.
- * This file outputs the full HTML shell that index.html normally provides,
- * but via WordPress's template system so WP can inject wp_head / wp_footer.
- *
- * NOTE: Page-specific templates (template-home.php, etc.) are available
- * for when you split this into individual WP pages in the future.
+ * Generic fallback template (WordPress requires index.php).
+ * Every real view has a dedicated template: front-page.php,
+ * page-{slug}.php, 404.php. This renders whatever the loop holds.
  */
+
 get_header();
 ?>
 
-<!-- All page views are in the JS-driven SPA. The full HTML is below. -->
-<?php
-// Include the full page partials
-get_template_part( 'partials/page', 'home' );
-get_template_part( 'partials/page', 'about' );
-get_template_part( 'partials/page', 'solutions' );
-get_template_part( 'partials/page', 'insights' );
-get_template_part( 'partials/page', 'resources' );
-get_template_part( 'partials/page', 'contact' );
-?>
+<div class="section single-wrap">
+  <div class="section-inner">
+    <?php if ( have_posts() ) : ?>
+      <?php while ( have_posts() ) : the_post(); ?>
+        <article <?php post_class( 'single-article' ); ?>>
+          <div class="single-header">
+            <h1 class="single-title"><?php the_title(); ?></h1>
+          </div>
+          <div class="single-body"><?php the_content(); ?></div>
+        </article>
+      <?php endwhile; ?>
+    <?php else : ?>
+      <div class="single-not-found">
+        <p class="eyebrow">Nothing here</p>
+        <h1 class="display-title">No content found.</h1>
+        <p class="body-copy"><a href="<?php echo esc_url( home_url( '/' ) ); ?>">Return home</a></p>
+      </div>
+    <?php endif; ?>
+  </div>
+</div>
 
 <?php get_footer(); ?>

@@ -1,3 +1,21 @@
+<?php
+/**
+ * Site header: <head>, fixed nav, and mobile drawer.
+ *
+ * Nav state is server-rendered: ffp_current_section() drives the active
+ * link, and the `nav-solid` body class (set in inc/routing.php) gives
+ * every non-home page an opaque nav. JS only adds `.scrolled` on the
+ * transparent home nav.
+ */
+
+$ffp_section = ffp_current_section();
+$ffp_nav     = [
+	'about'     => 'About',
+	'solutions' => 'Solutions',
+	'insights'  => 'Insights',
+	'resources' => 'Resources',
+];
+?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
 <head>
@@ -8,34 +26,28 @@
 <body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
 
-<!-- ══════════ NAV ══════════ -->
-<!--
-  Nav uses real href URLs with data-route attributes so right-click
-  "Copy Link Address" works correctly. The JS router intercepts the
-  click and prevents the full page reload.
--->
 <nav id="mainNav">
-  <a class="nav-logo" href="/" data-route data-page="home">
+  <a class="nav-logo" href="<?php echo esc_url( home_url( '/' ) ); ?>">
     <div class="nav-logo-mark">F</div>
     <div class="nav-logo-text">Fortune Financial<span>Planning</span></div>
   </a>
   <ul class="nav-links">
-    <li><a href="/about"     data-route data-page="about">About</a></li>
-    <li><a href="/solutions" data-route data-page="solutions">Solutions</a></li>
-    <li><a href="/insights"  data-route data-page="insights">Insights</a></li>
-    <li><a href="/resources" data-route data-page="resources">Resources</a></li>
-    <li><a href="/contact"   data-route data-page="contact" class="nav-cta">Schedule a Meeting</a></li>
+    <?php foreach ( $ffp_nav as $slug => $label ) : ?>
+      <li><a href="<?php echo esc_url( ffp_url( $slug ) ); ?>" class="<?php echo $ffp_section === $slug ? 'active' : ''; ?>"><?php echo esc_html( $label ); ?></a></li>
+    <?php endforeach; ?>
+    <li><a href="<?php echo esc_url( ffp_url( 'contact' ) ); ?>" class="nav-cta">Schedule a Meeting</a></li>
   </ul>
-  <button class="hamburger" id="ham" aria-label="Toggle menu">
+  <button class="hamburger" id="ham" aria-label="Toggle menu" aria-expanded="false">
     <span></span><span></span><span></span>
   </button>
 </nav>
 
 <div class="mobile-drawer" id="drawer">
-  <a href="/"          data-route data-page="home"      onclick="closeDrawer()">Home</a>
-  <a href="/about"     data-route data-page="about"     onclick="closeDrawer()">About</a>
-  <a href="/solutions" data-route data-page="solutions" onclick="closeDrawer()">Solutions</a>
-  <a href="/insights"  data-route data-page="insights"  onclick="closeDrawer()">Insights</a>
-  <a href="/resources" data-route data-page="resources" onclick="closeDrawer()">Resources</a>
-  <a href="/contact"   data-route data-page="contact"   onclick="closeDrawer()" class="drawer-cta">Schedule a Meeting</a>
+  <a href="<?php echo esc_url( home_url( '/' ) ); ?>">Home</a>
+  <?php foreach ( $ffp_nav as $slug => $label ) : ?>
+    <a href="<?php echo esc_url( ffp_url( $slug ) ); ?>"><?php echo esc_html( $label ); ?></a>
+  <?php endforeach; ?>
+  <a href="<?php echo esc_url( ffp_url( 'contact' ) ); ?>" class="drawer-cta">Schedule a Meeting</a>
 </div>
+
+<main id="content">

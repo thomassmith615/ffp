@@ -1,0 +1,19 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "landingPage": "/",
+  "steps": [
+    { "step": "login", "username": "admin", "password": "password" },
+    { "step": "activateTheme", "themeFolderName": "ffp" },
+    {
+      "step": "setSiteOptions",
+      "options": {
+        "blogname": "Fortune Financial Planning",
+        "permalink_structure": "/%postname%/"
+      }
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php require_once '/wordpress/wp-load.php'; foreach (['Home','About','Solutions','Insights','Resources','Contact'] as $title) { $slug = sanitize_title($title); if (!get_page_by_path($slug)) { $id = wp_insert_post(['post_title'=>$title,'post_name'=>$slug,'post_type'=>'page','post_status'=>'publish']); if ('Home' === $title) { update_option('show_on_front','page'); update_option('page_on_front',$id); } } } flush_rewrite_rules(true); ?>"
+    }
+  ]
+}
