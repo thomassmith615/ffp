@@ -51,33 +51,38 @@ get_header();
     <p class="eyebrow reveal">What We Do</p>
     <h2 class="display-title reveal d1">Solutions built around <em>your life</em></h2>
     <p class="body-copy reveal d2" style="max-width:520px">From retirement income to estate protection, our guidance spans the full spectrum of your financial life — always personalized, always independent.</p>
-    <div class="services-preview-grid reveal d2">
-      <a class="svc-card" href="<?php echo esc_url( ffp_url( 'solutions' ) . '#financial-planning' ); ?>">
-        <h3>Financial Planning</h3>
-        <p>Goal-driven strategy with built-in accountability. A comprehensive roadmap tailored to where you are and where you want to go.</p>
-      </a>
-      <a class="svc-card" href="<?php echo esc_url( ffp_url( 'solutions' ) . '#investment-management' ); ?>">
-        <h3>Investment Management</h3>
-        <p>Long-term, disciplined investment philosophy built around your risk tolerance and time horizon — not short-term speculation.</p>
-      </a>
-      <a class="svc-card" href="<?php echo esc_url( ffp_url( 'solutions' ) . '#business-succession' ); ?>">
-        <h3>Business Succession</h3>
-        <p>Whether you're building or preparing to transition, we help business owners create wealth strategies and exit plans with confidence.</p>
-      </a>
-      <a class="svc-card" href="<?php echo esc_url( ffp_url( 'solutions' ) . '#estate-insurance' ); ?>">
-        <h3>Estate &amp; Insurance</h3>
-        <p>Coordinate insurance and estate planning to protect what matters most and preserve your legacy for the people you care about.</p>
-      </a>
-      <a class="svc-card" href="<?php echo esc_url( ffp_url( 'solutions' ) . '#retirement-income' ); ?>">
-        <h3>Retirement Income</h3>
-        <p>Turn savings into sustainable, predictable income. We design plans that let you live the life you've worked toward — on your terms.</p>
-      </a>
-      <a class="svc-card" href="<?php echo esc_url( ffp_url( 'solutions' ) . '#401k-plan-services' ); ?>">
-        <h3>401(k) Plan Services</h3>
-        <p>Specialized 401(k) solutions through RPk — high-quality, cost-effective retirement plan management for businesses of all sizes.</p>
-      </a>
+    <?php
+    // Numbering and anchors mirror the six sections on /solutions/.
+    $ffp_services = [
+      [ 'financial-planning',    'Financial Planning',      'Goal-driven strategy with built-in accountability. A comprehensive roadmap tailored to where you are and where you want to go.' ],
+      [ 'investment-management', 'Investment Management',   'Long-term, disciplined investment philosophy built around your risk tolerance and time horizon — not short-term speculation.' ],
+      [ 'business-succession',   'Business Succession',     "Whether you're building or preparing to transition, we help business owners create wealth strategies and exit plans with confidence." ],
+      [ 'estate-insurance',      'Estate & Insurance',      'Coordinate insurance and estate planning to protect what matters most and preserve your legacy for the people you care about.' ],
+      [ 'retirement-income',     'Retirement Income',       "Turn savings into sustainable, predictable income. We design plans that let you live the life you've worked toward — on your terms." ],
+      [ '401k-plan-services',    '401(k) Plan Services',    'Specialized 401(k) solutions through RPk — high-quality, cost-effective retirement plan management for businesses of all sizes.' ],
+    ];
+    ?>
+    <div class="svc-index">
+      <?php foreach ( $ffp_services as $i => $svc ) :
+        // Photo slot: drop assets/img/home/{anchor}.jpg to replace the tile.
+        $thumb = ffp_image_url( 'home/' . $svc[0] );
+        ?>
+        <a class="svc-row reveal<?php echo ' d' . min( 3, $i % 3 + 1 ); ?>" href="<?php echo esc_url( ffp_url( 'solutions' ) . '#' . $svc[0] ); ?>">
+          <?php if ( $thumb ) : ?>
+            <span class="svc-thumb svc-thumb-photo" style="background-image:url('<?php echo esc_url( $thumb ); ?>')"></span>
+          <?php else : ?>
+            <span class="svc-thumb svc-thumb-<?php echo esc_attr( chr( 97 + ( $i % 3 ) ) ); ?>"><?php echo esc_html( sprintf( '%02d', $i + 1 ) ); ?></span>
+          <?php endif; ?>
+          <div class="svc-main">
+            <p class="svc-kicker"><?php echo esc_html( sprintf( '%02d', $i + 1 ) ); ?> — Solution</p>
+            <h3><?php echo esc_html( $svc[1] ); ?></h3>
+            <p><?php echo esc_html( $svc[2] ); ?></p>
+          </div>
+          <span class="svc-arrow" aria-hidden="true">→</span>
+        </a>
+      <?php endforeach; ?>
     </div>
-    <div style="text-align:center;margin-top:2.2rem">
+    <div style="text-align:center;margin-top:2.5rem">
       <a class="btn btn-green reveal d3" href="<?php echo esc_url( ffp_url( 'solutions' ) ); ?>">View All Solutions</a>
     </div>
   </div>
@@ -88,7 +93,8 @@ get_header();
   <div class="section-inner">
     <div class="why-grid">
       <div class="why-visual">
-        <div class="why-visual-inner"></div>
+        <?php $why_img = ffp_image_url( 'home/why' ); // drop assets/img/home/why.jpg for a real photo ?>
+        <div class="why-visual-inner"<?php echo $why_img ? ' style="background-image:url(\'' . esc_url( $why_img ) . '\');background-size:cover;background-position:center"' : ''; ?>></div>
         <div class="why-stat">
           <div class="s-num">25+</div>
           <div class="s-label">Years Experience</div>

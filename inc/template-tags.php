@@ -6,6 +6,24 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
+ * URL of a drop-in theme image, or '' if it hasn't been added yet.
+ *
+ * Looks for assets/img/{name} with common extensions, so templates can
+ * declare an image slot ("home/financial-planning") and render a styled
+ * placeholder until the real file is dropped in. See assets/img/README.md
+ * for the expected filenames.
+ */
+function ffp_image_url( $name ) {
+	foreach ( [ '', '.svg', '.png', '.webp', '.jpg', '.jpeg' ] as $ext ) {
+		$rel = 'assets/img/' . $name . $ext;
+		if ( file_exists( get_template_directory() . '/' . $rel ) ) {
+			return get_template_directory_uri() . '/' . $rel;
+		}
+	}
+	return '';
+}
+
+/**
  * Breadcrumb trail. $crumbs is a list of [ 'label' => ..., 'url' => ... ];
  * the last crumb (or any without a url) renders as plain text.
  */

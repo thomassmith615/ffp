@@ -48,7 +48,15 @@ $ffp_solutions = [
 ];
 
 get_header();
+
+// Full-page watermark: activates when the firm's tree logo is dropped in
+// at assets/img/logo-tree.(svg|png|webp|jpg). Rendered fixed behind the
+// sections at ~5% opacity; nothing renders until the file exists.
+$ffp_logo = ffp_image_url( 'logo-tree' );
+if ( $ffp_logo ) :
 ?>
+  <div class="sol-watermark" aria-hidden="true" style="background-image:url('<?php echo esc_url( $ffp_logo ); ?>')"></div>
+<?php endif; ?>
 
 <div class="page-hero solutions-hero">
   <div class="page-hero-inner">
