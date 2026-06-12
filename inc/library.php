@@ -127,6 +127,26 @@ function ffp_get_insight_post( $slug ) {
 	return $posts ? $posts[0] : null;
 }
 
+/* ─────────────────────────── TEAM ─────────────────────────── */
+
+/** All team members (data/team.php), keyed by slug, in display order. */
+function ffp_team() {
+	static $team = null;
+	if ( null === $team ) {
+		$team = require get_template_directory() . '/data/team.php';
+	}
+	return $team;
+}
+
+/** One team member (with slug merged in), or null. */
+function ffp_get_team_member( $slug ) {
+	$team = ffp_team();
+	if ( ! isset( $team[ $slug ] ) ) {
+		return null;
+	}
+	return array_merge( [ 'slug' => $slug ], $team[ $slug ] );
+}
+
 /* ─────────────────────────── URL BUILDERS ─────────────────────────── */
 
 /** Absolute URL for a site path, with WP's trailing-slash preference. */
@@ -152,4 +172,9 @@ function ffp_category_url( $category, $tab = '' ) {
 /** URL of a single insight: /insights/{slug}/ */
 function ffp_insight_url( $slug ) {
 	return ffp_url( 'insights/' . $slug );
+}
+
+/** URL of a team member bio: /about/{slug}/ */
+function ffp_member_url( $slug ) {
+	return ffp_url( 'about/' . $slug );
 }

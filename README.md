@@ -28,7 +28,8 @@ Every view is a shareable, server-rendered URL with a proper `<title>`, meta des
 | URL | View |
 |---|---|
 | `/` | Home |
-| `/about/` | About / team |
+| `/about/` | About / team directory |
+| `/about/{slug}/` | Individual team member bio (e.g. `/about/kevin-gianfortune/`) |
 | `/solutions/` | Solutions (each section anchor-linkable, e.g. `/solutions/#retirement-income`) |
 | `/insights/` | Insights editorial feed |
 | `/insights/{slug}/` | Single insight (static library or `insight` post) |

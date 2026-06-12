@@ -16,6 +16,11 @@ needed. Until a file exists, the slot renders a styled placeholder
 | `home/estate-insurance` | Home — services index tile 04 |
 | `home/retirement-income` | Home — services index tile 05 |
 | `home/401k-plan-services` | Home — services index tile 06 |
+| `team/kevin-gianfortune` | About + bio page — Kevin's photo (square crop, ≥600px) |
+| `team/walter-eife` | About + bio page — Walt's photo |
+| `team/steve-melchiorre` | About + bio page — Steve's photo |
+| `team/james-owens` | About + bio page — James's photo |
+| `team/liz-gianfortune` | About + bio page — Liz's photo |
 
 Square crops work best for the service tiles; they render at 104px
 (76px on small phones), so anything ≥300px square is plenty.

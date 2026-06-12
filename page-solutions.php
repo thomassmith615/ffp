@@ -40,9 +40,15 @@ $ffp_solutions = [
 		'topics' => [ 'Social Security', 'RMDs', 'Roth Conversion', 'Income Ladders' ],
 	],
 	[
+		// Client-approved wording (Walt) — do not edit the title or copy.
 		'id'     => '401k-plan-services',
-		'title'  => '401(k) Plan Services — RPk',
-		'copy'   => "Through Retirement Plan (k)onsultant (RPk), Walt Eife provides specialized, high-quality 401(k) plan management for businesses. RPk's exclusive focus means deep expertise — from plan design and investment selection to participant education and fiduciary oversight. Simple, supportive, and cost-effective, with your employees' retirements as the priority.",
+		'title'  => 'Employer Sponsored Plans – Retirement Plan (k)onsulting',
+		'nav'    => 'Employer Sponsored Plans',
+		'copy'   => [
+			'Retirement Plan (k)onsulting (RPk) focuses exclusively on retirement plan consulting for businesses. Because our practice is dedicated to 401(k) and retirement plan consulting, we are able to provide focused guidance, ongoing support, and administrative assistance tailored to the needs of plan sponsors and participants.',
+			'Managing a retirement plan can be complex and time-consuming. We work with business owners, HR professionals, plan committees, and service providers to navigate the administrative responsibilities that come with sponsoring a retirement plan. Our goal is to help simplify the process so your organization can focus on its broader business objectives.',
+			'As a member of the Retirement Plan Advisory Group (PRAG), a national consortium of retirement plan specialists, RP(k) has access to additional resources, tools, and industry expertise. Through this membership, RPk provides cutting edge tools and software coupled with 20+ years of practical experience to help us manage your fiduciary responsibilities and adhere to ERISA’s rigorous standards.',
+		],
 		'topics' => [ 'Plan Design', 'ERISA', 'Employee Ed.', 'Fiduciary' ],
 	],
 ];
@@ -71,7 +77,7 @@ if ( $ffp_logo ) :
     <?php foreach ( $ffp_solutions as $i => $sol ) : ?>
       <a href="#<?php echo esc_attr( $sol['id'] ); ?>" data-section="<?php echo esc_attr( $sol['id'] ); ?>">
         <span class="sol-subnav-num"><?php echo esc_html( sprintf( '%02d', $i + 1 ) ); ?></span>
-        <?php echo wp_kses_post( $sol['title'] ); ?>
+        <?php echo wp_kses_post( $sol['nav'] ?? $sol['title'] ); ?>
       </a>
     <?php endforeach; ?>
   </div>
@@ -86,7 +92,9 @@ if ( $ffp_logo ) :
       <div class="sol-section-body">
         <p class="eyebrow reveal">Solution <?php echo esc_html( sprintf( '%02d', $i + 1 ) ); ?> — of 06</p>
         <h2 class="sol-section-title reveal d1"><?php echo wp_kses_post( $sol['title'] ); ?></h2>
-        <p class="body-copy reveal d2"><?php echo esc_html( $sol['copy'] ); ?></p>
+        <?php foreach ( (array) $sol['copy'] as $p => $para ) : ?>
+          <p class="body-copy reveal d2"<?php echo $p > 0 ? ' style="margin-top:1rem"' : ''; ?>><?php echo esc_html( $para ); ?></p>
+        <?php endforeach; ?>
         <p class="sol-topics reveal d3">
           <?php echo esc_html( implode( '  ·  ', $sol['topics'] ) ); ?>
         </p>

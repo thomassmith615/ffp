@@ -21,16 +21,29 @@
   --max-w: 1200px;
   --pad-x: clamp(1.25rem, 6vw, 5rem);
 }
-html { scroll-behavior: smooth; font-size: 17px; }
+html {
+  scroll-behavior: smooth; font-size: 17px;
+  -webkit-text-size-adjust: 100%; text-size-adjust: 100%;
+}
+/* Horizontal overflow guard: `clip` (where supported) blocks sideways
+   scroll without creating a scroll container, so position:sticky keeps
+   working. The `hidden` line is the fallback for older browsers. */
+html, body { max-width: 100%; overflow-x: hidden; overflow-x: clip; }
 body {
   font-family: var(--font-body);
   color: var(--dark);
   background: var(--white);
-  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 img { display: block; max-width: 100%; }
 a { color: inherit; }
+
+/* Small phones: scale the whole rem-based layout down a notch and
+   allow long unbreakable strings (emails, URLs) to wrap. */
+@media (max-width: 430px) {
+  html { font-size: 15px; }
+}
+.member-contact a, .contact-block a, .footer-col a, .single-body a { overflow-wrap: anywhere; }
 
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--bg-off); }
@@ -450,21 +463,11 @@ main { display: block; animation: pageFadeIn 0.4s var(--ease); }
 .about-value-line { width: 24px; height: 1px; background: var(--green); flex-shrink: 0; }
 @media (max-width: 720px) { .about-hero-inner { grid-template-columns: 1fr; gap: 2rem; } }
 
-.mission-grid {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: clamp(2rem, 6vw, 5rem); align-items: start;
+.mission-block { max-width: 720px; }
+.mission-attr {
+  font-size: 0.78rem; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--sage); margin: -0.2rem 0 1.4rem;
 }
-@media (max-width: 700px) { .mission-grid { grid-template-columns: 1fr; } }
-.mission-aside { padding-top: 0.5rem; }
-.mission-quote {
-  background: var(--white); border: 1px solid var(--hairline);
-  border-radius: 6px; padding: 2rem; margin-bottom: 1.2rem;
-}
-.mission-quote-text {
-  font-family: var(--font-display); font-size: 1.55rem; font-weight: 300;
-  color: var(--green); line-height: 1.3; font-style: italic;
-}
-.mission-quote-attr { font-size: 0.8rem; color: var(--sage); margin-top: 0.75rem; }
 
 /* Team grid */
 .team-grid {
@@ -497,6 +500,9 @@ main { display: block; animation: pageFadeIn 0.4s var(--ease); }
 .team-body { padding: 1.4rem 1.3rem 1.3rem; }
 @media (max-width: 700px) { .team-body { padding: 0.9rem; } }
 .team-name { font-family: var(--font-display); font-size: 1.18rem; font-weight: 400; color: var(--dark); }
+.team-name a { text-decoration: none; color: inherit; transition: color 0.2s; }
+.team-name a:hover { color: var(--green); }
+a.team-photo { display: block; text-decoration: none; }
 @media (max-width: 700px) { .team-name { font-size: 0.95rem; } }
 .team-role { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--sage); margin: 3px 0 0.75rem; }
 .team-bio { font-size: 0.85rem; line-height: 1.68; color: rgba(57,52,30,0.63); font-weight: 300; }
@@ -561,7 +567,9 @@ main { display: block; animation: pageFadeIn 0.4s var(--ease); }
   opacity: 0.05;
   pointer-events: none;
 }
-.solutions-hero, .sol-subnav, .sol-section, .sol-closing { position: relative; z-index: 1; }
+/* NOTE: .sol-subnav is deliberately absent — it must keep
+   position: sticky (declared above) and already sits at z-index 100. */
+.solutions-hero, .sol-section, .sol-closing { position: relative; z-index: 1; }
 
 .sol-section {
   padding: clamp(3.5rem, 7vw, 6rem) var(--pad-x);
@@ -973,6 +981,43 @@ main { display: block; animation: pageFadeIn 0.4s var(--ease); }
   line-height: 1.35; margin-bottom: 0.5rem;
 }
 .related-meta { font-size: 0.74rem; color: var(--sage); }
+
+/* Team member bio page — /about/{slug}/ */
+.member-header {
+  display: grid; grid-template-columns: 180px minmax(0, 1fr);
+  gap: clamp(1.5rem, 4vw, 2.5rem); align-items: center;
+  margin-bottom: 2.5rem; padding-bottom: 2rem;
+  border-bottom: 1px solid var(--hairline);
+}
+.member-photo {
+  width: 100%; aspect-ratio: 1; border-radius: 6px;
+  overflow: hidden; background: var(--bg-off);
+}
+.member-photo img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+.member-photo .initials { font-size: 2.6rem; }
+.member-name { margin-bottom: 0.8rem; }
+.member-contact { display: flex; gap: 1.4rem; flex-wrap: wrap; }
+.member-contact a {
+  font-size: 0.86rem; font-weight: 500; color: var(--sage);
+  text-decoration: none; transition: color 0.2s;
+}
+.member-contact a:hover { color: var(--green); }
+.member-intro {
+  border-left: 3px solid var(--green);
+  padding: 0.25rem 0 0.25rem 1.4rem;
+  margin-bottom: 2.2rem;
+}
+.member-intro p {
+  font-family: var(--font-display); font-style: italic;
+  font-size: clamp(1.05rem, 1.7vw, 1.25rem); font-weight: 300;
+  line-height: 1.6; color: rgba(57,52,30,0.75);
+}
+.member-intro p + p { margin-top: 1rem; }
+.member-back { margin-top: 2.5rem; }
+@media (max-width: 560px) {
+  .member-header { grid-template-columns: 1fr; }
+  .member-photo { width: 140px; }
+}
 
 .single-not-found { max-width: 600px; margin: 3rem auto; text-align: center; }
 .single-not-found .display-title { margin-top: 0.5rem; }

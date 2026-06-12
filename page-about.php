@@ -1,10 +1,23 @@
 <?php
 /**
- * About page — hero, mission, team grid.
- * Applies automatically to the page with slug "about".
+ * About — firm mission + team directory at /about/, individual bio
+ * pages at /about/{slug}/ (validated in inc/routing.php).
+ *
+ * Mission copy and all bios are client-approved wording (data/team.php)
+ * and must not be edited.
  */
 
+$ffp_slug = get_query_var( 'ffp_slug' );
+
 get_header();
+
+if ( $ffp_slug ) {
+	get_template_part( 'template-parts/single', 'member', [
+		'member' => ffp_get_team_member( $ffp_slug ),
+	] );
+	get_footer();
+	return;
+}
 ?>
 
 <div class="about-hero page-hero-dark">
@@ -27,20 +40,13 @@ get_header();
 </div>
 
 <div class="section" style="background:var(--bg-off)">
-  <div class="section-inner mission-grid">
-    <div>
-      <p class="eyebrow reveal">Our Mission</p>
-      <h2 class="display-title reveal d1">"Help people first,<br><em>make money second."</em></h2>
-      <p class="body-copy reveal d2">It all starts with a promise Kevin Gianfortune made to his father when he entered the financial services business. He committed to help people first and make money second — and he and his team honor that promise every day.</p>
-      <p class="body-copy reveal d3" style="margin-top:1rem">Our mission is to put you, the client, first at all times and provide guidance that can truly make a difference in your financial life. We function as a complete resource for all types of financial questions across every stage of life.</p>
-    </div>
-    <div class="reveal d2 mission-aside">
-      <div class="mission-quote">
-        <p class="mission-quote-text">"True financial planning encompasses elements beyond investments and insurance."</p>
-        <p class="mission-quote-attr">— Kevin J. Gianfortune, Founder</p>
-      </div>
-      <a class="btn btn-green" href="<?php echo esc_url( ffp_url( 'contact' ) ); ?>">Schedule a Meeting</a>
-    </div>
+  <div class="section-inner mission-block">
+    <p class="eyebrow reveal">About Us</p>
+    <h2 class="display-title reveal d1">"Help people first,<br><em>make money second."</em></h2>
+    <p class="mission-attr reveal d1">— Joseph P. Gianfortune, founder's father</p>
+    <p class="body-copy reveal d2">Our commitment to providing personalized service and fiduciary care begins with a promise our founder made to his father before entering the financial services industry. We serve as a resource for a wide range of financial questions and concerns throughout life's many stages.</p>
+    <p class="body-copy reveal d3" style="margin-top:1rem">Our approach is straightforward and transparent, and our guidance is personalized to your unique circumstances. We use a structured process and accountability framework to help implement and monitor recommendations.</p>
+    <a class="btn btn-green reveal d3" style="margin-top:1.8rem" href="<?php echo esc_url( ffp_url( 'contact' ) ); ?>">Schedule a Meeting</a>
   </div>
 </div>
 
@@ -49,77 +55,34 @@ get_header();
     <p class="eyebrow reveal">The Fortune Family</p>
     <h2 class="display-title reveal d1">People you can <em>count on</em></h2>
     <div class="team-grid">
-      <div class="team-card reveal d1">
-        <div class="team-photo"><div class="team-photo-placeholder"><div class="initials">KG</div><div class="ph-label">Add Photo</div></div></div>
-        <div class="team-body">
-          <div class="team-name">Kevin J. Gianfortune</div>
-          <div class="team-role">Financial Planner &amp; Owner</div>
-          <p class="team-bio">Kevin helps clients make conscious, deliberate financial decisions across every life stage — business transitions, retirement income, estate coordination, and everything in between. LaSalle University, B.S. Finance. Series 6, 7, 63, 65.</p>
-          <div class="team-links">
-            <a class="team-link" href="tel:8564545002"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.7 12.07 19.79 19.79 0 01.67 3.5 2 2 0 012.65 1.32h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.91 9a16 16 0 006.08 6.08l1.93-1.93a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>(856) 454-5002<span class="team-link-arrow">›</span></a>
-            <a class="team-link" href="mailto:kevin.gianfortune@lpl.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email<span class="team-link-arrow">›</span></a>
+      <?php $i = 0; foreach ( ffp_team() as $slug => $member ) : $i++;
+        $photo = ffp_image_url( 'team/' . $slug ); // drop assets/img/team/{slug}.jpg
+        $bio_url = ffp_member_url( $slug );
+        ?>
+        <div class="team-card reveal d<?php echo esc_attr( ( $i - 1 ) % 3 + 1 ); ?>">
+          <a class="team-photo" href="<?php echo esc_url( $bio_url ); ?>">
+            <?php if ( $photo ) : ?>
+              <img src="<?php echo esc_url( $photo ); ?>" alt="<?php echo esc_attr( $member['name'] ); ?>" />
+            <?php else : ?>
+              <div class="team-photo-placeholder"><div class="initials"><?php echo esc_html( $member['initials'] ); ?></div><div class="ph-label">Add Photo</div></div>
+            <?php endif; ?>
+          </a>
+          <div class="team-body">
+            <div class="team-name"><a href="<?php echo esc_url( $bio_url ); ?>"><?php echo esc_html( $member['name'] ); ?></a></div>
+            <div class="team-role"><?php echo esc_html( $member['role'] ); ?></div>
+            <p class="team-bio"><?php echo esc_html( $member['teaser'] ); ?></p>
+            <div class="team-links">
+              <?php if ( ! empty( $member['phone'] ) ) : ?>
+                <a class="team-link" href="tel:<?php echo esc_attr( $member['phone'] ); ?>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.7 12.07 19.79 19.79 0 01.67 3.5 2 2 0 012.65 1.32h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.91 9a16 16 0 006.08 6.08l1.93-1.93a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg><?php echo esc_html( $member['phone_label'] ); ?></a>
+              <?php endif; ?>
+              <?php if ( ! empty( $member['email'] ) ) : ?>
+                <a class="team-link" href="mailto:<?php echo esc_attr( $member['email'] ); ?>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><?php echo esc_html( $member['email_label'] ); ?></a>
+              <?php endif; ?>
+              <a class="team-link team-link-bio" href="<?php echo esc_url( $bio_url ); ?>">Full Bio<span class="team-link-arrow">›</span></a>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="team-card reveal d2">
-        <div class="team-photo"><div class="team-photo-placeholder"><div class="initials">SM</div><div class="ph-label">Add Photo</div></div></div>
-        <div class="team-body">
-          <div class="team-name">Stephen Melchiorre</div>
-          <div class="team-role">Financial Planner</div>
-          <p class="team-bio">Stephen specializes in young professionals, business owners, and charter school employees — meeting each client at their level of financial literacy to build lasting confidence. Division I swimmer, St. Bonaventure University.</p>
-          <div class="team-links">
-            <a class="team-link" href="tel:2677603458"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.7 12.07 19.79 19.79 0 01.67 3.5 2 2 0 012.65 1.32h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.91 9a16 16 0 006.08 6.08l1.93-1.93a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>(267) 760-3458<span class="team-link-arrow">›</span></a>
-            <a class="team-link" href="mailto:steve.melchiorre@lpl.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email<span class="team-link-arrow">›</span></a>
-          </div>
-        </div>
-      </div>
-      <div class="team-card reveal d3">
-        <div class="team-photo"><div class="team-photo-placeholder"><div class="initials">WE</div><div class="ph-label">Add Photo</div></div></div>
-        <div class="team-body">
-          <div class="team-name">Walter Eife, AIF®, QPFC®</div>
-          <div class="team-role">Financial Advisor</div>
-          <p class="team-bio">With 25+ years of experience, Walt focuses on retirement planning and 401(k) solutions. Founded Waypoint Financial Partners in 2006 and launched RPk in 2020 — specialized, cost-effective 401(k) management for businesses.</p>
-          <div class="team-links">
-            <a class="team-link" href="tel:8564954412"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.7 12.07 19.79 19.79 0 01.67 3.5 2 2 0 012.65 1.32h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.91 9a16 16 0 006.08 6.08l1.93-1.93a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>(856) 495-4412<span class="team-link-arrow">›</span></a>
-            <a class="team-link" href="mailto:Walt.Eife@LPL.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email<span class="team-link-arrow">›</span></a>
-          </div>
-        </div>
-      </div>
-      <div class="team-card reveal d1">
-        <div class="team-photo"><div class="team-photo-placeholder"><div class="initials">JO</div><div class="ph-label">Add Photo</div></div></div>
-        <div class="team-body">
-          <div class="team-name">James Owens</div>
-          <div class="team-role">Investment Operations</div>
-          <p class="team-bio">Cum laude graduate, Bucknell University (Electrical Engineering, 2023). Passed SIE, Series 66, and Series 7. CFA Level I candidate, bringing rigorous analytical thinking to every client interaction.</p>
-          <div class="team-links">
-            <a class="team-link" href="tel:2673737487"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.7 12.07 19.79 19.79 0 01.67 3.5 2 2 0 012.65 1.32h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.91 9a16 16 0 006.08 6.08l1.93-1.93a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>(267) 373-7487<span class="team-link-arrow">›</span></a>
-            <a class="team-link" href="mailto:J.Owens@lpl.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email<span class="team-link-arrow">›</span></a>
-          </div>
-        </div>
-      </div>
-      <div class="team-card reveal d2">
-        <div class="team-photo"><div class="team-photo-placeholder"><div class="initials">CE</div><div class="ph-label">Add Photo</div></div></div>
-        <div class="team-body">
-          <div class="team-name">Cael Evans</div>
-          <div class="team-role">Client Services &amp; Insurance</div>
-          <p class="team-bio">Cael leads our insurance department, helping families and businesses protect their financial futures. B.S. Business Management (Sport Management). 4-sport high school athlete, collegiate basketball player and coach.</p>
-          <div class="team-links">
-            <a class="team-link" href="tel:5707066201"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.7 12.07 19.79 19.79 0 01.67 3.5 2 2 0 012.65 1.32h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.91 9a16 16 0 006.08 6.08l1.93-1.93a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>(570) 706-6201<span class="team-link-arrow">›</span></a>
-            <a class="team-link" href="mailto:Cael.Evans@LPL.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email<span class="team-link-arrow">›</span></a>
-          </div>
-        </div>
-      </div>
-      <div class="team-card reveal d3">
-        <div class="team-photo"><div class="team-photo-placeholder"><div class="initials">JK</div><div class="ph-label">Add Photo</div></div></div>
-        <div class="team-body">
-          <div class="team-name">Jennifer Klekotka</div>
-          <div class="team-role">Office Administrator</div>
-          <p class="team-bio">Jennifer manages daily operations, new client onboarding, CRM, and compliance workflows. 32 years of experience across legal office management, HR, and contract administration. Voorhees, NJ.</p>
-          <div class="team-links">
-            <a class="team-link" href="mailto:info@fortunefinancialplanning.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Office Email<span class="team-link-arrow">›</span></a>
-          </div>
-        </div>
-      </div>
+      <?php endforeach; ?>
     </div>
   </div>
 </div>

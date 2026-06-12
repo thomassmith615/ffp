@@ -61,6 +61,13 @@ function ffp_rewrite_rules() {
 		'index.php?pagename=insights&ffp_slug=$matches[1]',
 		'top'
 	);
+
+	// Team member bio: /about/{slug}
+	add_rewrite_rule(
+		'^about/([^/]+)/?$',
+		'index.php?pagename=about&ffp_slug=$matches[1]',
+		'top'
+	);
 }
 add_action( 'init', 'ffp_rewrite_rules' );
 
@@ -121,6 +128,10 @@ function ffp_validate_routes() {
 			$fail();
 		}
 	}
+
+	if ( is_page( 'about' ) && $slug && ! ffp_get_team_member( $slug ) ) {
+		$fail();
+	}
 }
 add_action( 'wp', 'ffp_validate_routes' );
 
@@ -132,6 +143,12 @@ function ffp_current_route_meta() {
 	$category = get_query_var( 'ffp_category' );
 
 	if ( $slug ) {
+		if ( is_page( 'about' ) ) {
+			$member = ffp_get_team_member( $slug );
+			if ( $member ) {
+				return [ $member['name'] . ' — ' . $member['role'], $member['teaser'] ];
+			}
+		}
 		$item = ffp_get_item( $slug );
 		if ( ffp_item_is_routable( $item ) ) {
 			return [ $item['title'], $item['excerpt'] ?? '' ];
