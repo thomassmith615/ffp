@@ -147,6 +147,27 @@ function ffp_get_team_member( $slug ) {
 	return array_merge( [ 'slug' => $slug ], $team[ $slug ] );
 }
 
+/* ─────────────────────────── SOLUTIONS ─────────────────────────── */
+
+/** All solutions (data/solutions.php), keyed by slug, in display order. */
+function ffp_solutions() {
+	static $solutions = null;
+	if ( null === $solutions ) {
+		$solutions = require get_template_directory() . '/data/solutions.php';
+	}
+	return $solutions;
+}
+
+/** One solution (with slug and 1-based position merged in), or null. */
+function ffp_get_solution( $slug ) {
+	$solutions = ffp_solutions();
+	if ( ! isset( $solutions[ $slug ] ) ) {
+		return null;
+	}
+	$position = array_search( $slug, array_keys( $solutions ), true ) + 1;
+	return array_merge( [ 'slug' => $slug, 'position' => $position ], $solutions[ $slug ] );
+}
+
 /* ─────────────────────────── URL BUILDERS ─────────────────────────── */
 
 /** Absolute URL for a site path, with WP's trailing-slash preference. */
@@ -177,4 +198,9 @@ function ffp_insight_url( $slug ) {
 /** URL of a team member bio: /about/{slug}/ */
 function ffp_member_url( $slug ) {
 	return ffp_url( 'about/' . $slug );
+}
+
+/** URL of a single solution: /solutions/{slug}/ */
+function ffp_solution_url( $slug ) {
+	return ffp_url( 'solutions/' . $slug );
 }

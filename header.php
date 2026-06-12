@@ -28,7 +28,12 @@ $ffp_nav     = [
 
 <nav id="mainNav">
   <a class="nav-logo" href="<?php echo esc_url( home_url( '/' ) ); ?>">
-    <div class="nav-logo-mark">F</div>
+    <?php $ffp_mark = ffp_image_url( 'logo-tree-toolbar' ); // square mark, background baked in ?>
+    <?php if ( $ffp_mark ) : ?>
+      <img class="nav-logo-img" src="<?php echo esc_url( $ffp_mark ); ?>" alt="" width="42" height="42" />
+    <?php else : ?>
+      <div class="nav-logo-mark">F</div>
+    <?php endif; ?>
     <div class="nav-logo-text">Fortune Financial<span>Planning</span></div>
   </a>
   <ul class="nav-links">

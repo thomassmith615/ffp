@@ -29,7 +29,7 @@ else :
 	$featured = array_shift( $feed );
 	?>
 
-	<div class="page-hero page-hero-dark insights-hero">
+	<div class="page-hero page-hero-dark insights-hero tree-watermark">
 	  <div class="page-hero-inner">
 	    <p class="eyebrow">Insights</p>
 	    <h1 class="display-title">Financial know-how, <em>simplified</em></h1>

@@ -20,7 +20,7 @@ if ( $ffp_slug ) {
 }
 ?>
 
-<div class="about-hero page-hero-dark">
+<div class="about-hero page-hero-dark tree-watermark">
   <div class="about-hero-inner">
     <div>
       <p class="eyebrow">About Us</p>

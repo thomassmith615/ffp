@@ -1,68 +1,33 @@
 <?php
 /**
- * Solutions page.
+ * Solutions — numbered index at /solutions/, full solution pages at
+ * /solutions/{slug}/ (validated in inc/routing.php). Content lives in
+ * data/solutions.php.
  *
- * The old boxed slider is replaced by an editorial flow: a sticky
- * anchor sub-nav and six full-width alternating sections, each with an
- * oversized number watermark. Every solution is individually linkable
- * via its anchor (e.g. /solutions/#retirement-income).
+ * The og tree logo renders fixed behind both the index and the
+ * individual pages as a one-color (sage) mask watermark.
+ * (logo-tree.png stays in assets/img as an unused spare.)
  */
 
-$ffp_solutions = [
-	[
-		'id'     => 'financial-planning',
-		'title'  => 'Financial Planning',
-		'copy'   => "A comprehensive financial plan isn't just a document — it's a living strategy built around your specific goals, timeline, and risk tolerance. We create clear roadmaps with built-in accountability systems, so progress is measurable and adjustments happen proactively. Whether you're early in your career, mid-life, or approaching a major transition, we provide the structure and guidance you need.",
-		'topics' => [ 'Goal Setting', 'Cash Flow', 'Net Worth', 'Accountability' ],
-	],
-	[
-		'id'     => 'investment-management',
-		'title'  => 'Investment Management',
-		'copy'   => "We build and manage diversified investment portfolios aligned with your long-term philosophy, not short-term noise. Rather than chasing performance or moving money constantly, we focus on disciplined, evidence-based strategies that let compounding do the work. We'll help you understand your true risk tolerance and design an allocation you can stay committed to through market cycles.",
-		'topics' => [ 'Portfolios', 'Risk Analysis', 'Diversification', 'Rebalancing' ],
-	],
-	[
-		'id'     => 'business-succession',
-		'title'  => 'Business Succession',
-		'copy'   => "Business owners face a unique set of financial challenges — and opportunities. We help you build personal wealth while running your business, design compensation and benefits structures that make tax sense, and plan a succession strategy well before you need it. Whether you're transitioning to family, partners, or a third-party buyer, we'll make sure you're financially prepared.",
-		'topics' => [ 'Exit Planning', 'Buy-Sell', 'Key Person', 'Business Valuation' ],
-	],
-	[
-		'id'     => 'estate-insurance',
-		'title'  => 'Estate &amp; Insurance',
-		'copy'   => "Your estate plan is more than a will — it's a comprehensive strategy for passing wealth, minimizing taxes, and protecting the people you love. We coordinate with estate attorneys and CPAs to ensure your financial plan and legal documents align. On the insurance side, we analyze your existing coverage and identify gaps across life, disability, long-term care, and liability.",
-		'topics' => [ 'Wills & Trusts', 'Life Insurance', 'LTC', 'Disability' ],
-	],
-	[
-		'id'     => 'retirement-income',
-		'title'  => 'Retirement Income Planning',
-		'copy'   => "Accumulating assets is only half the challenge — converting them into sustainable income is where the real planning begins. We design retirement income strategies that coordinate Social Security, pension distributions, IRA withdrawals, and investment income. We model different scenarios so you can see exactly how your plan holds up through market downturns, inflation, and healthcare costs.",
-		'topics' => [ 'Social Security', 'RMDs', 'Roth Conversion', 'Income Ladders' ],
-	],
-	[
-		// Client-approved wording (Walt) — do not edit the title or copy.
-		'id'     => '401k-plan-services',
-		'title'  => 'Employer Sponsored Plans – Retirement Plan (k)onsulting',
-		'nav'    => 'Employer Sponsored Plans',
-		'copy'   => [
-			'Retirement Plan (k)onsulting (RPk) focuses exclusively on retirement plan consulting for businesses. Because our practice is dedicated to 401(k) and retirement plan consulting, we are able to provide focused guidance, ongoing support, and administrative assistance tailored to the needs of plan sponsors and participants.',
-			'Managing a retirement plan can be complex and time-consuming. We work with business owners, HR professionals, plan committees, and service providers to navigate the administrative responsibilities that come with sponsoring a retirement plan. Our goal is to help simplify the process so your organization can focus on its broader business objectives.',
-			'As a member of the Retirement Plan Advisory Group (PRAG), a national consortium of retirement plan specialists, RP(k) has access to additional resources, tools, and industry expertise. Through this membership, RPk provides cutting edge tools and software coupled with 20+ years of practical experience to help us manage your fiduciary responsibilities and adhere to ERISA’s rigorous standards.',
-		],
-		'topics' => [ 'Plan Design', 'ERISA', 'Employee Ed.', 'Fiduciary' ],
-	],
-];
+$ffp_slug = get_query_var( 'ffp_slug' );
 
 get_header();
 
-// Full-page watermark: activates when the firm's tree logo is dropped in
-// at assets/img/logo-tree.(svg|png|webp|jpg). Rendered fixed behind the
-// sections at ~5% opacity; nothing renders until the file exists.
-$ffp_logo = ffp_image_url( 'logo-tree' );
+$ffp_logo = ffp_image_url( 'logo-tree-og' );
 if ( $ffp_logo ) :
 ?>
-  <div class="sol-watermark" aria-hidden="true" style="background-image:url('<?php echo esc_url( $ffp_logo ); ?>')"></div>
-<?php endif; ?>
+  <div class="sol-watermark" aria-hidden="true" style="-webkit-mask-image:url('<?php echo esc_url( $ffp_logo ); ?>');mask-image:url('<?php echo esc_url( $ffp_logo ); ?>')"></div>
+<?php
+endif;
+
+if ( $ffp_slug ) {
+	get_template_part( 'template-parts/single', 'solution', [
+		'solution' => ffp_get_solution( $ffp_slug ),
+	] );
+	get_footer();
+	return;
+}
+?>
 
 <div class="page-hero solutions-hero">
   <div class="page-hero-inner">
@@ -72,41 +37,25 @@ if ( $ffp_logo ) :
   </div>
 </div>
 
-<nav class="sol-subnav" id="solSubnav" aria-label="Solutions">
-  <div class="sol-subnav-inner">
-    <?php foreach ( $ffp_solutions as $i => $sol ) : ?>
-      <a href="#<?php echo esc_attr( $sol['id'] ); ?>" data-section="<?php echo esc_attr( $sol['id'] ); ?>">
-        <span class="sol-subnav-num"><?php echo esc_html( sprintf( '%02d', $i + 1 ) ); ?></span>
-        <?php echo wp_kses_post( $sol['nav'] ?? $sol['title'] ); ?>
-      </a>
-    <?php endforeach; ?>
-  </div>
-</nav>
-
-<?php foreach ( $ffp_solutions as $i => $sol ) : ?>
-  <section class="sol-section" id="<?php echo esc_attr( $sol['id'] ); ?>">
-    <div class="sol-section-inner">
-      <div class="sol-section-meta">
-        <span class="sol-section-num reveal"><?php echo esc_html( sprintf( '%02d', $i + 1 ) ); ?></span>
-      </div>
-      <div class="sol-section-body">
-        <p class="eyebrow reveal">Solution <?php echo esc_html( sprintf( '%02d', $i + 1 ) ); ?> — of 06</p>
-        <h2 class="sol-section-title reveal d1"><?php echo wp_kses_post( $sol['title'] ); ?></h2>
-        <?php foreach ( (array) $sol['copy'] as $p => $para ) : ?>
-          <p class="body-copy reveal d2"<?php echo $p > 0 ? ' style="margin-top:1rem"' : ''; ?>><?php echo esc_html( $para ); ?></p>
-        <?php endforeach; ?>
-        <p class="sol-topics reveal d3">
-          <?php echo esc_html( implode( '  ·  ', $sol['topics'] ) ); ?>
-        </p>
-      </div>
+<div class="section sol-layer">
+  <div class="section-inner">
+    <div class="sol-index">
+      <?php $i = 0; foreach ( ffp_solutions() as $slug => $sol ) : $i++; ?>
+        <a class="sol-index-row reveal d<?php echo esc_attr( ( $i - 1 ) % 3 + 1 ); ?>" href="<?php echo esc_url( ffp_solution_url( $slug ) ); ?>">
+          <span class="sol-index-num"><?php echo esc_html( sprintf( '%02d', $i ) ); ?></span>
+          <div class="sol-index-main">
+            <h2><?php echo esc_html( $sol['title'] ); ?></h2>
+            <p><?php echo esc_html( $sol['teaser'] ); ?></p>
+          </div>
+          <span class="res-index-arrow" aria-hidden="true">→</span>
+        </a>
+      <?php endforeach; ?>
     </div>
-  </section>
-<?php endforeach; ?>
 
-<div class="section sol-closing">
-  <div class="section-inner" style="text-align:center">
-    <p class="body-copy reveal" style="margin-bottom:1.2rem">Not sure where to start? A 15-minute call is all it takes.</p>
-    <a class="btn btn-green reveal d1" href="<?php echo esc_url( ffp_url( 'contact' ) ); ?>">Schedule a Free Introduction</a>
+    <div class="sol-index-cta">
+      <p class="body-copy reveal">Not sure where to start? A 15-minute call is all it takes.</p>
+      <a class="btn btn-green reveal d1" href="<?php echo esc_url( ffp_url( 'contact' ) ); ?>">Schedule a Free Introduction</a>
+    </div>
   </div>
 </div>
 

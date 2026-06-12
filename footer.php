@@ -9,7 +9,12 @@
   <div class="footer-main">
     <div class="footer-brand">
       <a class="nav-logo" href="<?php echo esc_url( home_url( '/' ) ); ?>">
-        <div class="nav-logo-mark">F</div>
+        <?php $ffp_mark = ffp_image_url( 'logo-tree-toolbar' ); ?>
+        <?php if ( $ffp_mark ) : ?>
+          <img class="nav-logo-img" src="<?php echo esc_url( $ffp_mark ); ?>" alt="" width="42" height="42" />
+        <?php else : ?>
+          <div class="nav-logo-mark">F</div>
+        <?php endif; ?>
         <div class="nav-logo-text">Fortune Financial<span>Planning</span></div>
       </a>
       <p>Helping individuals, families, and business owners in South Jersey pursue financial clarity, confidence, and a life lived with purpose.</p>

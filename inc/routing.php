@@ -68,6 +68,13 @@ function ffp_rewrite_rules() {
 		'index.php?pagename=about&ffp_slug=$matches[1]',
 		'top'
 	);
+
+	// Single solution: /solutions/{slug}
+	add_rewrite_rule(
+		'^solutions/([^/]+)/?$',
+		'index.php?pagename=solutions&ffp_slug=$matches[1]',
+		'top'
+	);
 }
 add_action( 'init', 'ffp_rewrite_rules' );
 
@@ -132,6 +139,10 @@ function ffp_validate_routes() {
 	if ( is_page( 'about' ) && $slug && ! ffp_get_team_member( $slug ) ) {
 		$fail();
 	}
+
+	if ( is_page( 'solutions' ) && $slug && ! ffp_get_solution( $slug ) ) {
+		$fail();
+	}
 }
 add_action( 'wp', 'ffp_validate_routes' );
 
@@ -147,6 +158,12 @@ function ffp_current_route_meta() {
 			$member = ffp_get_team_member( $slug );
 			if ( $member ) {
 				return [ $member['name'] . ' — ' . $member['role'], $member['teaser'] ];
+			}
+		}
+		if ( is_page( 'solutions' ) ) {
+			$solution = ffp_get_solution( $slug );
+			if ( $solution ) {
+				return [ $solution['title'] . ' — Solutions', $solution['teaser'] ];
 			}
 		}
 		$item = ffp_get_item( $slug );

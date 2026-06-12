@@ -61,33 +61,6 @@
     });
   });
 
-  /* ═══════════ SOLUTIONS SUB-NAV SCROLLSPY ═══════════ */
-  const subnav = document.getElementById('solSubnav');
-  if (subnav) {
-    const links = subnav.querySelectorAll('a[data-section]');
-    const sections = Array.from(links)
-      .map((a) => document.getElementById(a.dataset.section))
-      .filter(Boolean);
-
-    const setActive = (id) => {
-      links.forEach((a) => a.classList.toggle('active', a.dataset.section === id));
-    };
-
-    const spy = new IntersectionObserver((entries) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) setActive(e.target.id);
-      });
-    }, { rootMargin: '-35% 0px -55% 0px' });
-    sections.forEach((s) => spy.observe(s));
-
-    // Keep the active pill scrolled into view inside the sub-nav strip.
-    links.forEach((a) => {
-      a.addEventListener('click', () => {
-        a.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-      });
-    });
-  }
-
   /* ═══════════ SHARE — COPY LINK ═══════════ */
   document.querySelectorAll('.share-btn[data-share-url]').forEach((btn) => {
     btn.addEventListener('click', async () => {
@@ -166,13 +139,35 @@
     }
   }
 
-  /* ═══════════ HERO VIDEO FALLBACK ═══════════ */
+  /* ═══════════ HERO VIDEO FALLBACK ═══════════
+     Safari refuses autoplay in Low Power Mode / flaky networks and then
+     paints its native play glyph over the paused frame. Strategy:
+       1. force the muted/inline flags via properties (Safari trusts
+          these more than the HTML attributes),
+       2. retry play() on metadata and on the first touch/click,
+       3. if it still isn't playing shortly after load, hide the video
+          so the gradient shows instead of a dead player. */
   const vid = document.querySelector('#hero .hero-bg video');
   if (vid) {
-    vid.addEventListener('error', () => { vid.style.display = 'none'; });
-    vid.addEventListener('loadedmetadata', () => {
+    vid.muted = true;
+    vid.defaultMuted = true;
+    vid.setAttribute('playsinline', '');
+
+    const tryPlay = () => {
       const p = vid.play();
-      if (p && p.catch) p.catch(() => { /* autoplay blocked — gradient shows */ });
-    });
+      if (p && p.catch) p.catch(() => { /* blocked — retry/hide handles it */ });
+    };
+    const hideIfStalled = () => {
+      if (vid.paused) vid.style.display = 'none';
+    };
+
+    vid.addEventListener('error', () => { vid.style.display = 'none'; });
+    vid.addEventListener('loadedmetadata', tryPlay);
+    vid.addEventListener('playing', () => { vid.style.display = ''; });
+    document.addEventListener('touchstart', tryPlay, { once: true, passive: true });
+    document.addEventListener('click', tryPlay, { once: true });
+
+    tryPlay();
+    setTimeout(hideIfStalled, 4000);
   }
 })();

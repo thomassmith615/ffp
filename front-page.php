@@ -11,11 +11,19 @@ get_header();
   <div class="hero-bg">
     <!--
       Video sized via .hero-bg video CSS (object-fit: cover, centered).
-      If the video fails to load, the gradient background underneath
-      shows through. Replace src with a self-hosted file for production.
+      If the video can't load or autoplay, JS hides it and the gradient
+      underneath shows through (no native play-button overlay).
+      Drop a self-hosted file at assets/media/hero.mp4 to replace the
+      remote placeholder source.
     -->
-    <video id="heroVideo" autoplay muted loop playsinline preload="auto">
-      <source src="https://www.pexels.com/download/video/3209829/" type="video/mp4">
+    <?php
+    $hero_video = file_exists( get_template_directory() . '/assets/media/hero.mp4' )
+      ? get_template_directory_uri() . '/assets/media/hero.mp4'
+      : 'https://www.pexels.com/download/video/3209829/';
+    ?>
+    <video id="heroVideo" autoplay muted loop playsinline preload="auto"
+           disablepictureinpicture disableremoteplayback x-webkit-airplay="deny">
+      <source src="<?php echo esc_url( $hero_video ); ?>" type="video/mp4">
     </video>
   </div>
   <div class="hero-overlay"></div>
@@ -28,14 +36,13 @@ get_header();
       <a class="btn btn-outline-light" href="<?php echo esc_url( ffp_url( 'solutions' ) ); ?>">Explore Our Solutions</a>
     </div>
   </div>
-  <div class="hero-scroll-hint" data-scroll-to="home-purpose">
-    <div class="scroll-line"></div>
-    <span>Scroll</span>
-  </div>
+  <button class="hero-scroll-btn" type="button" data-scroll-to="home-purpose" aria-label="Scroll to content">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="6 9 12 15 18 9"/></svg>
+  </button>
 </section>
 
 <!-- Purpose -->
-<div class="section purpose-strip" id="home-purpose">
+<div class="section purpose-strip tree-watermark" id="home-purpose">
   <div class="section-inner">
     <p class="eyebrow reveal">Our Promise</p>
     <h2 class="display-title reveal d1" style="color:var(--white)">Caring for <em style="color:var(--tan)">people</em><br>comes first</h2>
@@ -52,31 +59,36 @@ get_header();
     <h2 class="display-title reveal d1">Solutions built around <em>your life</em></h2>
     <p class="body-copy reveal d2" style="max-width:520px">From retirement income to estate protection, our guidance spans the full spectrum of your financial life — always personalized, always independent.</p>
     <?php
-    // Numbering and anchors mirror the six sections on /solutions/.
-    $ffp_services = [
-      [ 'financial-planning',    'Financial Planning',      'Goal-driven strategy with built-in accountability. A comprehensive roadmap tailored to where you are and where you want to go.' ],
-      [ 'investment-management', 'Investment Management',   'Long-term, disciplined investment philosophy built around your risk tolerance and time horizon — not short-term speculation.' ],
-      [ 'business-succession',   'Business Succession',     "Whether you're building or preparing to transition, we help business owners create wealth strategies and exit plans with confidence." ],
-      [ 'estate-insurance',      'Estate & Insurance',      'Coordinate insurance and estate planning to protect what matters most and preserve your legacy for the people you care about.' ],
-      [ 'retirement-income',     'Retirement Income',       "Turn savings into sustainable, predictable income. We design plans that let you live the life you've worked toward — on your terms." ],
-      [ '401k-plan-services',    'Employer Sponsored Plans', 'Specialized 401(k) solutions through RPk — high-quality, cost-effective retirement plan management for businesses of all sizes.' ],
+    // Short homepage descriptions (placeholder wording); each row links
+    // to the matching solution page. Numbering mirrors /solutions/.
+    $ffp_service_blurbs = [
+      'financial-planning'    => 'Goal-driven strategy with built-in accountability. A comprehensive roadmap tailored to where you are and where you want to go.',
+      'investment-management' => 'Long-term, disciplined investment philosophy built around your risk tolerance and time horizon — not short-term speculation.',
+      'business-succession'   => "Whether you're building or preparing to transition, we help business owners create wealth strategies and exit plans with confidence.",
+      'estate-insurance'      => 'Coordinate insurance and estate planning to protect what matters most and preserve your legacy for the people you care about.',
+      'retirement-income'     => "Turn savings into sustainable, predictable income. We design plans that let you live the life you've worked toward — on your terms.",
+      '401k-plan-services'    => 'Specialized 401(k) solutions through RPk — high-quality, cost-effective retirement plan management for businesses of all sizes.',
+    ];
+    $ffp_service_titles = [
+      'retirement-income'  => 'Retirement Income',
+      '401k-plan-services' => 'Employer Sponsored Plans',
     ];
     ?>
     <div class="svc-index">
-      <?php foreach ( $ffp_services as $i => $svc ) :
-        // Photo slot: drop assets/img/home/{anchor}.jpg to replace the tile.
-        $thumb = ffp_image_url( 'home/' . $svc[0] );
+      <?php $i = 0; foreach ( ffp_solutions() as $slug => $sol ) : $i++;
+        // Photo slot: drop assets/img/home/{slug}.jpg to replace the tile.
+        $thumb = ffp_image_url( 'home/' . $slug );
         ?>
-        <a class="svc-row reveal<?php echo ' d' . min( 3, $i % 3 + 1 ); ?>" href="<?php echo esc_url( ffp_url( 'solutions' ) . '#' . $svc[0] ); ?>">
+        <a class="svc-row reveal<?php echo ' d' . min( 3, ( $i - 1 ) % 3 + 1 ); ?>" href="<?php echo esc_url( ffp_solution_url( $slug ) ); ?>">
           <?php if ( $thumb ) : ?>
             <span class="svc-thumb svc-thumb-photo" style="background-image:url('<?php echo esc_url( $thumb ); ?>')"></span>
           <?php else : ?>
-            <span class="svc-thumb svc-thumb-<?php echo esc_attr( chr( 97 + ( $i % 3 ) ) ); ?>"><?php echo esc_html( sprintf( '%02d', $i + 1 ) ); ?></span>
+            <span class="svc-thumb svc-thumb-<?php echo esc_attr( chr( 97 + ( ( $i - 1 ) % 3 ) ) ); ?>"><?php echo esc_html( sprintf( '%02d', $i ) ); ?></span>
           <?php endif; ?>
           <div class="svc-main">
-            <p class="svc-kicker"><?php echo esc_html( sprintf( '%02d', $i + 1 ) ); ?> — Solution</p>
-            <h3><?php echo esc_html( $svc[1] ); ?></h3>
-            <p><?php echo esc_html( $svc[2] ); ?></p>
+            <p class="svc-kicker"><?php echo esc_html( sprintf( '%02d', $i ) ); ?></p>
+            <h3><?php echo esc_html( $ffp_service_titles[ $slug ] ?? $sol['title'] ); ?></h3>
+            <p><?php echo esc_html( $ffp_service_blurbs[ $slug ] ?? $sol['teaser'] ); ?></p>
           </div>
           <span class="svc-arrow" aria-hidden="true">→</span>
         </a>
@@ -169,7 +181,7 @@ get_header();
 </div>
 
 <!-- CTA Banner -->
-<div class="cta-banner">
+<div class="cta-banner tree-watermark">
   <h2 class="reveal">Financial clarity is closer than you think</h2>
   <p class="reveal d1">Schedule a no-pressure 15-minute introductory call and take the first step.</p>
   <a class="btn btn-white reveal d2" href="<?php echo esc_url( ffp_url( 'contact' ) ); ?>">Schedule a Consultation</a>

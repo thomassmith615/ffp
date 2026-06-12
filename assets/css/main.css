@@ -80,6 +80,10 @@ body.nav-solid #mainNav {
   color: var(--white); font-weight: 600; letter-spacing: -0.5px;
   flex-shrink: 0; box-shadow: 0 0 0 2px rgba(255,255,255,0.15);
 }
+/* Image mark (assets/img/logo-tree-toolbar.*): transparent-background
+   square, so it sits cleanly on the solid bar AND the transparent
+   hero-overlay state. No radius/border — just sized to the bar. */
+.nav-logo-img { width: 42px; height: 42px; display: block; flex-shrink: 0; object-fit: contain; }
 .nav-logo-text {
   font-family: var(--font-display); font-size: 1.2rem;
   font-weight: 400; color: var(--white); line-height: 1.2; letter-spacing: 0.01em;
@@ -210,6 +214,24 @@ main { display: block; animation: pageFadeIn 0.4s var(--ease); }
 .d3 { transition-delay: 0.24s; } .d4 { transition-delay: 0.32s; }
 .d5 { transition-delay: 0.40s; }
 
+/* Tree watermark for dark/green bands (.tree-watermark on the block).
+   Unlike the fixed solutions watermark, this one is absolutely
+   positioned INSIDE the block, so it scrolls with it. The transparent
+   logo (logo-tree-og.png) is used as a mask filled with the palette
+   tan — a light mark is the only thing that reads on dark panels. */
+.tree-watermark { position: relative; overflow: hidden; }
+.tree-watermark::before {
+  content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background-color: var(--tan);
+  -webkit-mask-image: url('../img/logo-tree-og.png');
+          mask-image: url('../img/logo-tree-og.png');
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: right -3rem center; mask-position: right -3rem center;
+  -webkit-mask-size: auto 140%; mask-size: auto 140%;
+  opacity: 0.03;
+}
+.tree-watermark > * { position: relative; z-index: 1; }
+
 /* Page heroes — light by default, .page-hero-dark inverts */
 .page-hero {
   background: var(--bg-off);
@@ -243,6 +265,16 @@ main { display: block; animation: pageFadeIn 0.4s var(--ease); }
   object-fit: cover; object-position: center center;
   transform: translate(-50%, -50%);
   z-index: 0; pointer-events: none;
+}
+/* Suppress browser chrome on the decorative hero video: WebKit's giant
+   start-playback glyph (shown when autoplay is refused) and any
+   accidental controls. Firefox's PiP toggle is disabled via the
+   disablepictureinpicture attribute on the element itself. */
+.hero-bg video::-webkit-media-controls,
+.hero-bg video::-webkit-media-controls-start-playback-button,
+.hero-bg video::-webkit-media-controls-panel {
+  display: none !important;
+  -webkit-appearance: none;
 }
 .hero-bg::after {
   content: ''; position: absolute; inset: 0; z-index: 1;
@@ -278,19 +310,24 @@ main { display: block; animation: pageFadeIn 0.4s var(--ease); }
   display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
   animation: fadeUp 0.9s var(--ease) 0.68s both;
 }
-.hero-scroll-hint {
-  position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
-  z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 6px;
-  cursor: pointer; opacity: 0; animation: fadeUp 0.8s var(--ease) 1.2s forwards;
+/* Circular chevron scroll cue. Centered with left/right:0 + margin:auto
+   (no transform), so the fade-in animation can't knock it off-center —
+   the old version animated `transform` and ended up misaligned. */
+.hero-scroll-btn {
+  position: absolute; bottom: 2.2rem; left: 0; right: 0; margin: 0 auto;
+  z-index: 2; width: 46px; height: 46px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: rgba(57,52,30,0.18);
+  border: 1px solid rgba(255,255,255,0.35);
+  color: rgba(255,255,255,0.75); cursor: pointer; padding: 0;
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  opacity: 0; animation: heroHintIn 0.8s var(--ease) 1.3s forwards;
+  transition: border-color 0.25s, color 0.25s, background 0.25s;
 }
-.hero-scroll-hint span { font-size: 0.63rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
-.scroll-line { width: 1px; height: 36px; background: rgba(255,255,255,0.2); overflow: hidden; position: relative; }
-.scroll-line::after {
-  content: ''; position: absolute; top: -100%; width: 100%; height: 100%;
-  background: linear-gradient(to bottom, transparent, var(--tan));
-  animation: scrollDrop 2s ease-in-out 1.5s infinite;
-}
-@keyframes scrollDrop { 0%{top:-100%} 100%{top:100%} }
+.hero-scroll-btn:hover { border-color: var(--tan); color: var(--tan); background: rgba(57,52,30,0.35); }
+.hero-scroll-btn svg { display: block; animation: scrollBob 2.4s ease-in-out 2s infinite; }
+@keyframes heroHintIn { to { opacity: 1; } }
+@keyframes scrollBob { 0%, 100% { transform: translateY(-2px); } 50% { transform: translateY(3px); } }
 @keyframes fadeUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:none} }
 
 /* Purpose Strip */
@@ -526,86 +563,82 @@ a.team-photo { display: block; text-decoration: none; }
 .team-link:hover .team-link-arrow { opacity: 1; transform: none; }
 
 /* ══════════════════════════════════════════
-   SOLUTIONS — EDITORIAL SECTIONS
-   Sticky anchor sub-nav + six alternating full-width sections
-   with oversized number watermarks. No boxes, no slider.
+   SOLUTIONS — INDEX + INDIVIDUAL PAGES
+   Numbered editorial index at /solutions/; each solution opens its
+   own page at /solutions/{slug}/. The tree-logo watermark sits fixed
+   behind both (renders only once assets/img/logo-tree.* exists).
 ══════════════════════════════════════════ */
-.sol-subnav {
-  position: sticky; top: var(--nav-h); z-index: 100;
-  background: rgba(255,255,255,0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--hairline);
-}
-.sol-subnav-inner {
-  max-width: var(--max-w); margin: 0 auto;
-  display: flex; gap: 0.25rem;
-  overflow-x: auto; scrollbar-width: none;
-  padding: 0 var(--pad-x);
-  -webkit-overflow-scrolling: touch;
-}
-.sol-subnav-inner::-webkit-scrollbar { display: none; }
-.sol-subnav a {
-  display: flex; align-items: center; gap: 7px;
-  font-size: 0.74rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
-  color: rgba(57,52,30,0.55); text-decoration: none; white-space: nowrap;
-  padding: 0.85rem 0.9rem; border-bottom: 2px solid transparent; margin-bottom: -1px;
-  transition: color 0.2s, border-color 0.2s;
-}
-.sol-subnav-num { font-size: 0.66rem; color: var(--sage); font-weight: 600; }
-.sol-subnav a:hover, .sol-subnav a.active { color: var(--green); border-bottom-color: var(--green); }
-
-/* Fixed tree-logo watermark behind the whole solutions flow.
-   Markup only renders once assets/img/logo-tree.* exists (see
-   page-solutions.php); section backgrounds are slightly translucent
-   so the mark reads through both bands. */
 .sol-watermark {
   position: fixed; inset: var(--nav-h) 0 0 0; z-index: 0;
-  background-repeat: no-repeat;
-  background-position: center 42%;
-  background-size: min(72vh, 80vw);
-  opacity: 0.05;
+  background-color: var(--sage);
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center 42%; mask-position: center 42%;
+  -webkit-mask-size: min(94vh, 102vw); mask-size: min(94vh, 102vw);
+  opacity: 0.04;
   pointer-events: none;
 }
-/* NOTE: .sol-subnav is deliberately absent — it must keep
-   position: sticky (declared above) and already sits at z-index 100. */
-.solutions-hero, .sol-section, .sol-closing { position: relative; z-index: 1; }
+/* Content layers paint above the (positioned) watermark; sections stay
+   transparent so the mark reads through. */
+.solutions-hero, .sol-layer { position: relative; z-index: 1; }
 
-.sol-section {
-  padding: clamp(3.5rem, 7vw, 6rem) var(--pad-x);
-  scroll-margin-top: calc(var(--nav-h) + 56px);
+.sol-index { border-top: 1px solid var(--hairline); }
+.sol-index-row {
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr) auto;
+  gap: clamp(1rem, 3vw, 2.5rem);
+  align-items: center;
+  padding: clamp(1.6rem, 3.5vw, 2.6rem) 0;
+  border-bottom: 1px solid var(--hairline);
+  text-decoration: none;
 }
-.sol-section:nth-of-type(even) { background: rgba(247,246,242,0.85); }
-.sol-section-inner {
-  max-width: var(--max-w); margin: 0 auto;
-  display: grid; grid-template-columns: minmax(120px, 220px) minmax(0, 640px);
-  gap: clamp(1.5rem, 5vw, 4.5rem);
-  justify-content: center;
-}
-.sol-section-num {
+.sol-index-num {
   font-family: var(--font-display);
-  font-size: clamp(4.5rem, 10vw, 8.5rem);
-  font-weight: 300; line-height: 0.9;
+  font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 300; line-height: 1;
   color: transparent;
-  -webkit-text-stroke: 1px rgba(91,119,71,0.4);
-  user-select: none; display: block;
+  -webkit-text-stroke: 1px rgba(91,119,71,0.45);
+  user-select: none;
 }
-.sol-section:nth-of-type(even) .sol-section-num { -webkit-text-stroke-color: rgba(112,123,97,0.45); }
-.sol-section-title {
-  font-family: var(--font-display); font-size: clamp(1.7rem, 3vw, 2.5rem);
-  font-weight: 400; color: var(--dark); margin-bottom: 1rem; line-height: 1.2;
+.sol-index-main h2 {
+  font-family: var(--font-display); font-size: clamp(1.5rem, 2.8vw, 2.2rem);
+  font-weight: 400; color: var(--dark); line-height: 1.2;
+  margin-bottom: 0.4rem; transition: color 0.25s;
 }
+.sol-index-main p {
+  font-size: 0.92rem; font-weight: 300; line-height: 1.65;
+  color: rgba(57,52,30,0.62); max-width: 620px;
+}
+.sol-index-row:hover .sol-index-main h2 { color: var(--green); }
+.sol-index-row:hover .res-index-arrow { transform: translateX(6px); color: var(--green); }
+@media (max-width: 640px) {
+  .sol-index-row { grid-template-columns: 56px minmax(0, 1fr); }
+  .sol-index-row .res-index-arrow { display: none; }
+}
+.sol-index-cta { text-align: center; margin-top: clamp(2.5rem, 5vw, 4rem); }
+.sol-index-cta p { margin-bottom: 1.2rem; }
+
+/* Individual solution page */
 .sol-topics {
-  margin-top: 1.4rem; padding-top: 1.1rem;
+  margin-top: 2rem; padding-top: 1.2rem;
   border-top: 1px solid var(--hairline);
   font-size: 0.72rem; font-weight: 500; letter-spacing: 0.12em;
   text-transform: uppercase; color: var(--sage); line-height: 2;
 }
-.sol-closing { background: var(--white); }
-@media (max-width: 680px) {
-  .sol-section-inner { grid-template-columns: 1fr; gap: 1rem; }
-  .sol-section-num { font-size: 3.4rem; }
+.sol-pager {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+  margin-top: 2.5rem; padding-top: 1.8rem;
+  border-top: 1px solid var(--hairline);
 }
+.sol-pager-link { text-decoration: none; }
+.sol-pager-next { text-align: right; }
+.sol-pager-dir {
+  display: block; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--sage); margin-bottom: 0.3rem;
+}
+.sol-pager-title {
+  font-family: var(--font-display); font-size: 1.1rem; font-weight: 400;
+  color: var(--dark); line-height: 1.3; transition: color 0.2s;
+}
+.sol-pager-link:hover .sol-pager-title { color: var(--green); }
 
 /* ══════════════════════════════════════════
    INSIGHTS — EDITORIAL FEED

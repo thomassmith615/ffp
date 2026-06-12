@@ -8,7 +8,9 @@ needed. Until a file exists, the slot renders a styled placeholder
 
 | File (any supported extension) | Where it appears |
 |---|---|
-| `logo-tree` | Solutions page — fullscreen translucent watermark behind all sections (~5% opacity). Use the brown tree mark, ideally as a transparent-background SVG or PNG. |
+| `logo-tree` | Currently unused spare (transparent dark-silhouette tree), kept for future use. |
+| `logo-tree-toolbar` | Header nav + footer — replaces the green "F" circle next to the wordmark. Square, transparent background (works over the hero too), rendered at 42px. |
+| `logo-tree-og` | Transparent full-color logo, used as a one-color CSS-mask watermark in two ways: tan-tinted in-block mark on dark bands (home "Our Promise" strip, home CTA banner, About/Insights/Contact heroes — toggle per block via the `tree-watermark` class) and sage-tinted fixed fullscreen mark behind the Solutions pages. |
 | `home/why` | Home — the large 4:5 visual in the "Why Fortune Financial" section (replaces the gradient panel; cropped cover, the floating stat cards stay on top). |
 | `home/financial-planning` | Home — services index tile 01 (square, ~210px source or larger) |
 | `home/investment-management` | Home — services index tile 02 |
@@ -24,3 +26,11 @@ needed. Until a file exists, the slot renders a styled placeholder
 
 Square crops work best for the service tiles; they render at 104px
 (76px on small phones), so anything ≥300px square is plenty.
+
+NOTE: the six `home/{slug}.webp` files are the gradient icon tiles for
+the homepage services list — 1024px masters rendered to WebP (bitmap
+because Safari handles filter-heavy SVG backgrounds unreliably). The
+editable vector sources are in `src/*.svg`; re-render with e.g.
+`qlmanage -t -s 1024` and convert. `.webp` wins over `.jpg` in the
+slot lookup, so to swap an icon for a real photo later, delete the
+`.webp` and drop in the `.jpg`.
