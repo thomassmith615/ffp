@@ -3,15 +3,14 @@
  * Fortune Financial Planning — solutions.
  *
  * Each solution is a row on the /solutions/ index and a full page at
- * /solutions/{slug}/. The Employer Sponsored Plans copy is
- * client-approved wording (Walt) and must not be edited; the other
- * five are placeholder copy pending final wording.
+ * /solutions/{slug}/.
  *
- * Fields:
- *   title   page + index row title
- *   teaser  one-liner shown on the index row (first sentence of copy)
- *   copy    full page paragraphs
- *   topics  small-caps topic list shown on the page
+ * WORDING STATUS (Jul 2026): copy for Financial Planning, Investment
+ * Management, Business Succession Planning, Estate Planning, and
+ * Employer Sponsored Plans is client-approved and must not be edited.
+ * Retirement Income Planning is still placeholder copy pending final
+ * wording. Teasers are the verbatim first sentence of each page's copy.
+ * The `topics` chips are placeholder UI labels, not client copy.
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -20,41 +19,49 @@ return [
 
 	'financial-planning' => [
 		'title'  => 'Financial Planning',
-		'teaser' => "A comprehensive financial plan isn't just a document — it's a living strategy built around your specific goals, timeline, and risk tolerance.",
+		'teaser' => 'Financial planning stems from a deep understanding of what matters most to you.',
 		'copy'   => [
-			"A comprehensive financial plan isn't just a document — it's a living strategy built around your specific goals, timeline, and risk tolerance. We create clear roadmaps with built-in accountability systems, so progress is measurable and adjustments happen proactively. Whether you're early in your career, mid-life, or approaching a major transition, we provide the structure and guidance you need.",
+			'Financial planning stems from a deep understanding of what matters most to you. Our process begins with a conversation. We take the time to learn about your goals, priorities, concerns, and the experiences that have shaped your financial life. Just as importantly, we use this time to determine whether our approach is the right fit for your needs. We believe the strongest planning relationships are built on open communication, shared expectations, and a genuine understanding of what matters most to you.',
+			"If we decide to move forward together, we'll gather information about your financial situation to develop a clearer picture of where you are today and where you would like to go. This may include discussions around retirement, investments, cash flow, insurance, estate planning considerations, business interests, or other areas that are important to your financial life. Our role is to organize these pieces into a thoughtful planning framework tailored to your unique circumstances.",
+			'From there, we develop personalized recommendations and review them with you in a collaborative and educational setting. We want you to understand our recommendations, but also the considerations and reasoning behind them, so you can make informed decisions with confidence.',
+			"Financial planning is an ongoing process, not a one-time solution. As your life evolves, your goals, priorities, and circumstances may change as well. Through regular communication and periodic reviews, we strive to provide guidance and support through life's many transitions.",
 		],
 		'topics' => [ 'Goal Setting', 'Cash Flow', 'Net Worth', 'Accountability' ],
 	],
 
 	'investment-management' => [
 		'title'  => 'Investment Management',
-		'teaser' => 'We build and manage diversified investment portfolios aligned with your long-term philosophy, not short-term noise.',
+		'teaser' => 'Investment management is an important part of a long-term financial plan.',
 		'copy'   => [
-			"We build and manage diversified investment portfolios aligned with your long-term philosophy, not short-term noise. Rather than chasing performance or moving money constantly, we focus on disciplined, evidence-based strategies that let compounding do the work. We'll help you understand your true risk tolerance and design an allocation you can stay committed to through market cycles.",
+			"Investment management is an important part of a long-term financial plan. In today's rapidly changing financial landscape, investors face a wide range of choices, market fluctuations, and economic uncertainty. A thoughtful investment approach begins with understanding your goals, time horizon, and comfort level with risk.",
+			'At Fortune Financial Planning, we take the time to understand your financial priorities and risk tolerance before developing a personalized investment strategy. Our role is to help you navigate the complexities of investing, evaluate opportunities and risks, and build a portfolio that reflects your individual circumstances. As markets and life events change, we review and adjust strategies to help keep your plan aligned with your evolving goals.',
 		],
 		'topics' => [ 'Portfolios', 'Risk Analysis', 'Diversification', 'Rebalancing' ],
 	],
 
 	'business-succession' => [
-		'title'  => 'Business Succession',
-		'teaser' => 'Business owners face a unique set of financial challenges — and opportunities.',
+		'title'  => 'Business Succession Planning',
+		'teaser' => 'For many business owners, a business represents years of hard work, personal investment, and long-term commitment.',
 		'copy'   => [
-			"Business owners face a unique set of financial challenges — and opportunities. We help you build personal wealth while running your business, design compensation and benefits structures that make tax sense, and plan a succession strategy well before you need it. Whether you're transitioning to family, partners, or a third-party buyer, we'll make sure you're financially prepared.",
+			'For many business owners, a business represents years of hard work, personal investment, and long-term commitment. Yet planning for future transitions is often delayed while day-to-day operations take priority. Whether your goal is to transition ownership to family members, key employees, business partners, or a third-party buyer, a thoughtful succession plan can help provide clarity and direction for the future of your business.',
+			'Business succession planning involves much more than identifying a successor. It requires evaluating the value of the business, understanding ownership structures, addressing tax considerations, coordinating legal documents, and preparing for both expected and unexpected life events. A well-developed succession strategy can help business owners explore their options, establish a framework for future transitions, and align business decisions with personal and financial priorities.',
+			"At Fortune Financial Planning, we work with business owners to evaluate succession planning considerations within the context of their broader financial picture. We collaborate with attorneys, accountants, valuation professionals, and other advisors to help coordinate the various components of the planning process. These components may include ownership transfer strategies, retirement planning, business valuation, risk management, charitable giving considerations, and tax-efficient planning opportunities. While every business owner's situation is unique, our goal is to help facilitate a structured planning process that supports informed decision-making and long-term preparation.",
 		],
 		'topics' => [ 'Exit Planning', 'Buy-Sell', 'Key Person', 'Business Valuation' ],
 	],
 
-	'estate-insurance' => [
-		'title'  => 'Estate & Insurance',
-		'teaser' => "Your estate plan is more than a will — it's a comprehensive strategy for passing wealth, minimizing taxes, and protecting the people you love.",
+	'estate-planning' => [
+		'title'  => 'Estate Planning',
+		'teaser' => 'Estate planning is an important process that helps you organize your financial affairs and provide guidance for how assets and responsibilities may be handled in the future.',
 		'copy'   => [
-			"Your estate plan is more than a will — it's a comprehensive strategy for passing wealth, minimizing taxes, and protecting the people you love. We coordinate with estate attorneys and CPAs to ensure your financial plan and legal documents align. On the insurance side, we analyze your existing coverage and identify gaps across life, disability, long-term care, and liability.",
+			'Estate planning is an important process that helps you organize your financial affairs and provide guidance for how assets and responsibilities may be handled in the future. A well-considered estate plan can help clarify your wishes, identify beneficiaries, appoint guardians for minor children, and address decisions related to healthcare and financial matters.',
+			'Estate planning may involve documents such as wills, trusts, powers of attorney, and healthcare directives. While we do not provide legal services or prepare estate planning documents, we can work alongside your attorney and other professional advisors to help align estate planning considerations with your overall financial plan. Our goal is to support a collaborative planning process that reflects your long-term priorities.',
 		],
-		'topics' => [ 'Wills & Trusts', 'Life Insurance', 'LTC', 'Disability' ],
+		'topics' => [ 'Wills & Trusts', 'Beneficiaries', 'Powers of Attorney', 'Healthcare Directives' ],
 	],
 
 	'retirement-income' => [
+		// PLACEHOLDER copy — final wording not yet provided.
 		'title'  => 'Retirement Income Planning',
 		'teaser' => 'Accumulating assets is only half the challenge — converting them into sustainable income is where the real planning begins.',
 		'copy'   => [
@@ -64,7 +71,6 @@ return [
 	],
 
 	'401k-plan-services' => [
-		// Client-approved wording (Walt) — do not edit title or copy.
 		'title'  => 'Employer Sponsored Plans – Retirement Plan (k)onsulting',
 		'teaser' => 'Retirement Plan (k)onsulting (RPk) focuses exclusively on retirement plan consulting for businesses.',
 		'copy'   => [

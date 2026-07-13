@@ -85,6 +85,17 @@ HTML,
 HTML,
 	],
 
+	'sharon-williams' => [
+		'name'     => 'Sharon Williams',
+		'role'     => 'Paraplanner',
+		'initials' => 'SW',
+		'teaser'   => 'At Fortune Financial Planning, Sharon works as a Paraplanner tailoring the client experience, making sure that clients feel supported in their portfolios and have an easy point of contact for their needs.',
+		'bio'      => <<<'HTML'
+<p>Sharon Williams is a graduate of Haverford College with a bachelor’s degree in Psychology and a minor in Economics. Sharon began her career in financial services with Vanguard and shortly after, worked on budget and vendor management at Future Standard. Sharon holds the Series 7 and 63 licenses and is securities licensed through FINRA in Pennsylvania and New Jersey. At Fortune Financial Planning, Sharon works as a Paraplanner tailoring the client experience, making sure that clients feel supported in their portfolios and have an easy point of contact for their needs.</p>
+<p>Born and raised in Philadelphia, Sharon enjoys watching Philadelphia sports, trying new restaurants in the city and exploring the city she loves with a tourist’s eye. Otherwise, Sharon can be found traveling, spending time with her nieces and nephews, or reading poetry and historical fiction novels.</p>
+HTML,
+	],
+
 	'liz-gianfortune' => [
 		'name'     => 'Liz Gianfortune',
 		'role'     => 'Office Manager',
@@ -94,7 +105,7 @@ HTML,
 		'bio'      => <<<'HTML'
 <p>Liz Gianfortune is the Office Manager at Fortune Financial Planning. She facilitates effective and efficient office procedures, which include vendor management, billing, accounts payable, and payroll responsibilities.</p>
 <p>Liz previously worked for over a decade as a special education teacher, devoting her life and attention to individuals with special needs. She prides herself on her empathy and compassion for others and lives everyday holding herself to that standard. Her supportive and approachable attitude contributes to the overall positive environment within the staff and office.</p>
-<p>Outside of the office, Liz resides with her husband Kevin in West Deptford with their two children, Harrison and Annabel (and their teacup Yorkie, Weston). She enjoys cheering on Philly sports with her family, reading with her son, and watching her daughter run. Her happiest memories are spent on the beach with her family and the greatest blessing in her life is being a mother.</p>
+<p>Outside of the office, Liz resides with her husband, Kevin in West Deptford with their two children, Harrison and Annabel (and their teacup Yorkie, Weston). She enjoys cheering on Philly sports with her family, reading with her son, and watching her daughter run. Her happiest memories are spent on the beach with her family and the greatest blessing in her life is being a mother.</p>
 HTML,
 	],
 

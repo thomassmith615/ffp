@@ -43,6 +43,7 @@ Every view is a shareable, server-rendered URL with a proper `<title>`, meta des
 | `/resources/calculator/{slug}/` | Single calculator |
 | `/resources/video/{slug}/` | Single video |
 | `/contact/` | Contact form |
+| `/do-not-sell/` | CCPA privacy request form (Do Not Sell My Personal Information) |
 
 Unknown slugs return genuine 404s. The legacy `/resources/calc` URL 301-redirects to `/resources/calculators/`.
 
@@ -98,7 +99,9 @@ ffp/
 
 ## Adding Content
 
-**Articles / calculators / videos** — add an entry to `data/resources.php`. Items with a `body` are routable and linkable everywhere automatically (category lists, counts, related reading, the Insights feed if `insight_tag` is set). Items without a `body` are listed as "coming soon".
+**Articles / calculators** — add an entry to `data/resources.php`. Items with a `body` are routable and linkable everywhere automatically (category lists, counts, related reading, the Insights feed if `insight_tag` is set). Items without a `body` are listed as "coming soon".
+
+**Videos — no code required** — the whole video catalog lives in `data/videos.csv`, editable in Excel/Numbers/Google Sheets. Columns: `slug` (URL segment — don't change once published), `category` (retirement | investment | estate | insurance | tax | lifestyle), `title`, `description`, `url` (the video's embed URL). A row with a `url` gets a playable page at `/resources/video/{slug}/`; without one it lists as "coming soon". Save as CSV (not .xlsx) back into `data/` and redeploy.
 
 **Insights via WP admin** — Insights → Add New. Title, content, excerpt, and an Insight Category. The post appears in the feed automatically and publishes at `/insights/{slug}/`.
 

@@ -62,7 +62,12 @@ if ( 'resources' === $context && $item['category'] ) {
         <?php endif; ?>
       </div>
 
-      <div class="single-body"><?php echo wp_kses_post( $item['body'] ); ?></div>
+      <?php
+      // Library bodies are trusted theme content (authored in data/,
+      // URLs escaped at build). Not passed through wp_kses_post because
+      // it would strip the <iframe> video embeds.
+      ?>
+      <div class="single-body"><?php echo $item['body']; ?></div>
 
       <?php ffp_share_buttons( $share_url, $item['title'], $kind_label ); ?>
 

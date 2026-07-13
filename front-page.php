@@ -59,16 +59,9 @@ get_header();
     <h2 class="display-title reveal d1">Solutions built around <em>your life</em></h2>
     <p class="body-copy reveal d2" style="max-width:520px">From retirement income to estate protection, our guidance spans the full spectrum of your financial life — always personalized, always independent.</p>
     <?php
-    // Short homepage descriptions (placeholder wording); each row links
-    // to the matching solution page. Numbering mirrors /solutions/.
-    $ffp_service_blurbs = [
-      'financial-planning'    => 'Goal-driven strategy with built-in accountability. A comprehensive roadmap tailored to where you are and where you want to go.',
-      'investment-management' => 'Long-term, disciplined investment philosophy built around your risk tolerance and time horizon — not short-term speculation.',
-      'business-succession'   => "Whether you're building or preparing to transition, we help business owners create wealth strategies and exit plans with confidence.",
-      'estate-insurance'      => 'Coordinate insurance and estate planning to protect what matters most and preserve your legacy for the people you care about.',
-      'retirement-income'     => "Turn savings into sustainable, predictable income. We design plans that let you live the life you've worked toward — on your terms.",
-      '401k-plan-services'    => 'Specialized 401(k) solutions through RPk — high-quality, cost-effective retirement plan management for businesses of all sizes.',
-    ];
+    // Each row shows the solution's teaser (verbatim first sentence of
+    // its page copy) and links to the page. Numbering mirrors /solutions/.
+    // Title overrides keep the two longest names row-sized.
     $ffp_service_titles = [
       'retirement-income'  => 'Retirement Income',
       '401k-plan-services' => 'Employer Sponsored Plans',
@@ -88,7 +81,7 @@ get_header();
           <div class="svc-main">
             <p class="svc-kicker"><?php echo esc_html( sprintf( '%02d', $i ) ); ?></p>
             <h3><?php echo esc_html( $ffp_service_titles[ $slug ] ?? $sol['title'] ); ?></h3>
-            <p><?php echo esc_html( $ffp_service_blurbs[ $slug ] ?? $sol['teaser'] ); ?></p>
+            <p><?php echo esc_html( $sol['teaser'] ); ?></p>
           </div>
           <span class="svc-arrow" aria-hidden="true">→</span>
         </a>

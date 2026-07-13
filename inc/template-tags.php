@@ -70,24 +70,29 @@ function ffp_share_buttons( $url, $title, $kind_label = 'article' ) {
 
 /**
  * Hairline list of library items. Routable items link to their single
- * view; stubs render muted with a "coming soon" note.
+ * view; stubs render muted with a "coming soon" note. Pass $with_desc
+ * to show each item's excerpt underneath (used for video listings).
  */
-function ffp_resource_list( array $items ) {
+function ffp_resource_list( array $items, $with_desc = false ) {
 	if ( ! $items ) {
 		return;
 	}
 	echo '<ul class="linked-list">';
 	foreach ( $items as $item ) {
+		$title = '<span class="ll-title">' . esc_html( $item['title'] ) . '</span>';
+		if ( $with_desc && ! empty( $item['excerpt'] ) ) {
+			$title .= '<span class="ll-desc">' . esc_html( $item['excerpt'] ) . '</span>';
+		}
 		if ( ffp_item_is_routable( $item ) ) {
 			printf(
-				'<li><a href="%s"><span>%s</span><span class="ll-arrow">&rsaquo;</span></a></li>',
+				'<li><a href="%s"><span class="ll-main">%s</span><span class="ll-arrow">&rsaquo;</span></a></li>',
 				esc_url( ffp_resource_url( $item ) ),
-				esc_html( $item['title'] )
+				$title
 			);
 		} else {
 			printf(
-				'<li class="ll-stub"><span>%s</span><span class="ll-soon">Coming soon</span></li>',
-				esc_html( $item['title'] )
+				'<li class="ll-stub"><span class="ll-main">%s</span><span class="ll-soon">Coming soon</span></li>',
+				$title
 			);
 		}
 	}

@@ -65,7 +65,7 @@ $kind_for_tab = [ 'articles' => 'article', 'calculators' => 'calculator', 'video
       </nav>
 
       <div class="reveal d1">
-        <?php ffp_resource_list( ffp_get_items( $category, $kind_for_tab[ $tab ] ) ); ?>
+        <?php ffp_resource_list( ffp_get_items( $category, $kind_for_tab[ $tab ] ), 'videos' === $tab ); ?>
       </div>
 
       <?php if ( 'calculators' === $tab ) : ?>

@@ -83,12 +83,27 @@
     });
   });
 
-  /* ═══════════ CONTACT FORM ═══════════ */
-  const form = document.getElementById('fortuneContactForm');
-  if (form) {
+  /* ═══════════ AJAX FORMS (contact + privacy request) ═══════════
+     Both forms post to admin-ajax.php with a nonce; the wp action and
+     the button's "sent" label are the only differences. */
+  function wireAjaxForm(formId, action, sentLabel) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+    const btn = form.querySelector('[type="submit"]');
+    const idleLabel = btn.textContent;
+
+    const feedback = (msg, success) => {
+      let fb = form.querySelector('.form-feedback');
+      if (!fb) {
+        fb = document.createElement('p');
+        btn.insertAdjacentElement('afterend', fb);
+      }
+      fb.textContent = msg;
+      fb.className = success ? 'form-feedback ok' : 'form-feedback err';
+    };
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const btn = document.getElementById('fortuneSubmitBtn');
       const email = form.elements.email.value.trim();
 
       if (!email || !email.includes('@')) {
@@ -105,7 +120,7 @@
 
       try {
         const body = new FormData(form);
-        body.append('action', 'fortune_contact');
+        body.append('action', action);
         body.append('nonce', fortuneData.nonce);
 
         const res = await fetch(fortuneData.ajaxUrl, { method: 'POST', body });
@@ -114,29 +129,64 @@
         if (data.success) {
           feedback(data.data.message, true);
           form.reset();
-          btn.textContent = 'Message Sent';
+          btn.textContent = sentLabel;
         } else {
           feedback((data.data && data.data.message) || 'Something went wrong. Please call us directly.', false);
-          btn.textContent = 'Send Message';
+          btn.textContent = idleLabel;
           btn.disabled = false;
         }
       } catch (err) {
         feedback('Network error. Please call (856) 454-5005.', false);
-        btn.textContent = 'Send Message';
+        btn.textContent = idleLabel;
         btn.disabled = false;
       }
     });
+  }
+  wireAjaxForm('fortuneContactForm', 'fortune_contact', 'Message Sent');
+  wireAjaxForm('fortunePrivacyForm', 'fortune_privacy', 'Request Sent');
 
-    function feedback(msg, success) {
-      let fb = document.getElementById('fortune-form-feedback');
-      if (!fb) {
-        fb = document.createElement('p');
-        fb.id = 'fortune-form-feedback';
-        document.getElementById('fortuneSubmitBtn').insertAdjacentElement('afterend', fb);
-      }
-      fb.textContent = msg;
-      fb.className = success ? 'form-feedback ok' : 'form-feedback err';
-    }
+  /* ═══════════ VIDEO CATALOG SEARCH (/resources/videos/) ═══════════
+     Live filter over the server-rendered list. Every typed word must
+     appear in the item's title, description, or category name.
+     Matching is case- and punctuation-insensitive ("401k" finds
+     "401(k)"). Empty categories collapse while filtering. */
+  const videoSearch = document.getElementById('videoSearch');
+  if (videoSearch) {
+    const catalog = document.getElementById('videoCatalog');
+    const countEl = document.getElementById('videoSearchCount');
+    const emptyEl = document.getElementById('videoSearchEmpty');
+    const sections = Array.from(catalog.querySelectorAll('.calc-section'));
+
+    const norm = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+    const squash = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '');
+
+    const index = [];
+    sections.forEach((section) => {
+      const cat = section.querySelector('.calc-section-title').textContent;
+      section.querySelectorAll('.linked-list li').forEach((li) => {
+        const text = li.textContent + ' ' + cat;
+        index.push({ li, section, norm: norm(text), squash: squash(text) });
+      });
+    });
+
+    videoSearch.addEventListener('input', () => {
+      const terms = norm(videoSearch.value).split(' ').filter(Boolean);
+      let shown = 0;
+
+      index.forEach((item) => {
+        const hit = terms.every((t) => item.norm.includes(t) || item.squash.includes(squash(t)));
+        item.li.hidden = !hit;
+        if (hit) shown++;
+      });
+
+      sections.forEach((section) => {
+        section.hidden = !Array.from(section.querySelectorAll('.linked-list li')).some((li) => !li.hidden);
+      });
+
+      countEl.textContent = terms.length ? shown + ' of ' + index.length + ' videos' : '';
+      emptyEl.hidden = shown > 0;
+      catalog.hidden = shown === 0;
+    });
   }
 
   /* ═══════════ HERO VIDEO FALLBACK ═══════════

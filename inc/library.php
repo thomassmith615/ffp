@@ -14,8 +14,52 @@ function ffp_library() {
 	static $library = null;
 	if ( null === $library ) {
 		$library = require get_template_directory() . '/data/resources.php';
+		ffp_merge_video_csv( $library );
 	}
 	return $library;
+}
+
+/**
+ * Merge data/videos.csv into the item store — the non-code editing
+ * path for the video catalog. Columns: slug, category, title,
+ * description, url. Rows with a url become playable pages (embedded
+ * player at /resources/video/{slug}/); rows without list as "coming
+ * soon". Rows with an unknown category or a slug that already exists
+ * are skipped.
+ */
+function ffp_merge_video_csv( array &$library ) {
+	$csv = get_template_directory() . '/data/videos.csv';
+	if ( ! file_exists( $csv ) || ! ( $fh = fopen( $csv, 'r' ) ) ) {
+		return;
+	}
+
+	$header = fgetcsv( $fh );
+	while ( ( $row = fgetcsv( $fh ) ) !== false ) {
+		if ( count( $row ) < 4 ) continue;
+		$row  = array_pad( $row, 5, '' );
+		list( $slug, $category, $title, $desc, $url ) = array_map( 'trim', $row );
+
+		if ( ! $slug || ! $title ) continue;
+		if ( isset( $library['items'][ $slug ] ) ) continue;
+		if ( ! isset( $library['categories'][ $category ] ) ) continue;
+
+		$body = null;
+		if ( $url ) {
+			$body = '<div class="video-embed-wrap"><iframe class="video-embed" src="' . esc_url( $url ) . '" title="' . esc_attr( $title ) . '" allowfullscreen loading="lazy"></iframe></div>';
+			if ( $desc ) {
+				$body .= '<p>' . esc_html( $desc ) . '</p>';
+			}
+		}
+
+		$library['items'][ $slug ] = [
+			'kind'     => 'video',
+			'category' => $category,
+			'title'    => $title,
+			'excerpt'  => $desc,
+			'body'     => $body,
+		];
+	}
+	fclose( $fh );
 }
 
 /** All resource categories, keyed by slug. */

@@ -28,10 +28,17 @@ add_action( 'after_setup_theme', 'ffp_theme_setup' );
  * so no _wp_page_template meta is needed.
  */
 function ffp_activate() {
-	$pages = [ 'Home', 'About', 'Solutions', 'Insights', 'Resources', 'Contact' ];
+	$pages = [
+		'Home'      => 'home',
+		'About'     => 'about',
+		'Solutions' => 'solutions',
+		'Insights'  => 'insights',
+		'Resources' => 'resources',
+		'Contact'   => 'contact',
+		'Do Not Sell My Personal Information' => 'do-not-sell',
+	];
 
-	foreach ( $pages as $title ) {
-		$slug = sanitize_title( $title );
+	foreach ( $pages as $title => $slug ) {
 		if ( get_page_by_path( $slug ) ) {
 			continue;
 		}

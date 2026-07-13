@@ -163,18 +163,7 @@ HTML,
 		'self-employed-plans'         => [ 'kind' => 'calculator', 'category' => 'retirement', 'title' => 'Self-Employed Retirement Plans' ],
 		'annuity-comparison'          => [ 'kind' => 'calculator', 'category' => 'retirement', 'title' => 'Annuity Comparison' ],
 
-		/* ── Retirement · videos ─────────────────────────────────── */
-
-		'retirement-income-101' => [
-			'kind' => 'video', 'category' => 'retirement',
-			'title' => 'Retirement Income 101',
-			'excerpt' => 'A walkthrough of the core building blocks of a sustainable retirement income strategy.',
-			'body' => <<<'HTML'
-<p>Video coming soon. In the meantime, the topics we cover: Social Security claiming, pension elections, the bucket strategy, the bond ladder, and the 4% rule (and why it's more guideline than gospel).</p>
-HTML,
-		],
-
-		'understanding-rmds-video' => [ 'kind' => 'video', 'category' => 'retirement', 'title' => 'Understanding Required Minimum Distributions' ],
+		/* NOTE: videos live in data/videos.csv, not here. */
 
 		/* ── Investment · articles ───────────────────────────────── */
 
@@ -232,11 +221,6 @@ HTML,
 		'saving-for-college'          => [ 'kind' => 'calculator', 'category' => 'investment', 'title' => 'Saving for College' ],
 		'contributing-to-an-ira'      => [ 'kind' => 'calculator', 'category' => 'investment', 'title' => 'Contributing to an IRA?' ],
 
-		/* ── Investment · videos ─────────────────────────────────── */
-
-		'what-is-diversification' => [ 'kind' => 'video', 'category' => 'investment', 'title' => 'What Is Diversification?' ],
-		'market-volatility'       => [ 'kind' => 'video', 'category' => 'investment', 'title' => 'Market Volatility — What to Do' ],
-
 		/* ── Estate · articles ───────────────────────────────────── */
 
 		'year-end-charitable-gifting' => [
@@ -271,11 +255,6 @@ HTML,
 		'life-expectancy'   => [ 'kind' => 'calculator', 'category' => 'estate', 'title' => 'What Is My Life Expectancy?' ],
 		'current-net-worth' => [ 'kind' => 'calculator', 'category' => 'estate', 'title' => 'What Is My Current Net Worth?' ],
 
-		/* ── Estate · videos ─────────────────────────────────────── */
-
-		'what-is-a-trust'        => [ 'kind' => 'video', 'category' => 'estate', 'title' => 'What Is a Trust?' ],
-		'estate-planning-basics' => [ 'kind' => 'video', 'category' => 'estate', 'title' => 'Estate Planning Basics' ],
-
 		/* ── Insurance · articles ────────────────────────────────── */
 
 		'how-much-life-insurance' => [
@@ -301,11 +280,6 @@ HTML,
 		'lifetime-of-earnings'  => [ 'kind' => 'calculator', 'category' => 'insurance', 'title' => 'Lifetime of Earnings' ],
 		'disability-income'     => [ 'kind' => 'calculator', 'category' => 'insurance', 'title' => 'Disability Income' ],
 		'long-term-care-needs'  => [ 'kind' => 'calculator', 'category' => 'insurance', 'title' => 'Long-Term Care Needs' ],
-
-		/* ── Insurance · videos ──────────────────────────────────── */
-
-		'life-insurance-basics'        => [ 'kind' => 'video', 'category' => 'insurance', 'title' => 'Life Insurance Basics' ],
-		'understanding-long-term-care' => [ 'kind' => 'video', 'category' => 'insurance', 'title' => 'Understanding Long-Term Care' ],
 
 		/* ── Tax · articles ──────────────────────────────────────── */
 
@@ -337,11 +311,6 @@ HTML,
 		'tax-freedom-day'        => [ 'kind' => 'calculator', 'category' => 'tax', 'title' => 'Tax Freedom Day' ],
 		'home-mortgage-deduction'=> [ 'kind' => 'calculator', 'category' => 'tax', 'title' => 'Home Mortgage Deduction' ],
 		'comparing-investments'  => [ 'kind' => 'calculator', 'category' => 'tax', 'title' => 'Comparing Investments (Tax Impact)' ],
-
-		/* ── Tax · videos ────────────────────────────────────────── */
-
-		'what-is-a-roth-conversion' => [ 'kind' => 'video', 'category' => 'tax', 'title' => 'What Is a Roth Conversion?' ],
-		'tax-planning-for-retirees' => [ 'kind' => 'video', 'category' => 'tax', 'title' => 'Tax Planning for Retirees' ],
 
 		/* ── Lifestyle · articles ────────────────────────────────── */
 
@@ -386,11 +355,6 @@ HTML,
 		'fuel-efficient-car'     => [ 'kind' => 'calculator', 'category' => 'lifestyle', 'title' => 'Interested in a Fuel Efficient Car?' ],
 		'current-cash-flow'      => [ 'kind' => 'calculator', 'category' => 'lifestyle', 'title' => 'What Is My Current Cash Flow?' ],
 		'historical-inflation'   => [ 'kind' => 'calculator', 'category' => 'lifestyle', 'title' => 'Historical Inflation' ],
-
-		/* ── Lifestyle · videos ──────────────────────────────────── */
-
-		'surprise-youve-got-money'  => [ 'kind' => 'video', 'category' => 'lifestyle', 'title' => "Surprise! You've Got Money!" ],
-		'paying-off-a-credit-card'  => [ 'kind' => 'video', 'category' => 'lifestyle', 'title' => 'Paying Off a Credit Card — Smart Strategies' ],
 
 		/* ── Insights-only articles (not listed under Resources) ─── */
 
