@@ -27,9 +27,25 @@ if ( $ffp_slug ) :
 else :
 	$feed     = ffp_get_insights();
 	$featured = array_shift( $feed );
+
+	// Topical thumbnail for a feed entry, keyed off its tag label.
+	// Dedicated images (assets/img/insights/tags/) so nothing on the
+	// site repeats a photo used elsewhere.
+	$ffp_tag_img = function ( $tag ) {
+		$map = [
+			'Investing'  => 'insights/tags/investing',
+			'Retirement' => 'insights/tags/retirement',
+			'Tax'        => 'insights/tags/tax',
+			'Planning'   => 'insights/tags/planning',
+			'Debt'       => 'insights/tags/debt',
+		];
+		return ffp_image_url( $map[ $tag ] ?? 'insights/tags/planning' );
+	};
+
+	$hero_img = ffp_image_url( 'heroes/insights' );
 	?>
 
-	<div class="page-hero page-hero-dark insights-hero tree-watermark">
+	<div class="page-hero page-hero-dark insights-hero<?php echo $hero_img ? ' page-hero-img' : ' tree-watermark'; ?>"<?php echo $hero_img ? ' style="--hero-img:url(\'' . esc_url( $hero_img ) . '\')"' : ''; ?>>
 	  <div class="page-hero-inner">
 	    <p class="eyebrow">Insights</p>
 	    <h1 class="display-title">Financial know-how, <em>simplified</em></h1>
@@ -40,28 +56,33 @@ else :
 	<div class="section">
 	  <div class="section-inner">
 
-	    <?php if ( $featured ) : ?>
+	    <?php if ( $featured ) : $fimg = $ffp_tag_img( $featured['tag'] ); ?>
 	      <article class="insight-feature reveal">
-	        <p class="feed-tag"><?php echo esc_html( $featured['tag'] ); ?> · Latest</p>
-	        <h2 class="insight-feature-title">
-	          <a href="<?php echo esc_url( ffp_insight_url( $featured['slug'] ) ); ?>"><?php echo esc_html( $featured['title'] ); ?></a>
-	        </h2>
-	        <p class="insight-feature-dek"><?php echo esc_html( $featured['dek'] ); ?></p>
-	        <p class="feed-meta">
-	          <?php echo esc_html( $featured['author'] . ' · ' . $featured['date'] . ( $featured['read_time'] ? ' · ' . $featured['read_time'] : '' ) ); ?>
-	          <a class="feed-read" href="<?php echo esc_url( ffp_insight_url( $featured['slug'] ) ); ?>">Read the article →</a>
-	        </p>
+	        <div class="insight-feature-main">
+	          <p class="feed-tag"><?php echo esc_html( $featured['tag'] ); ?> · Latest</p>
+	          <h2 class="insight-feature-title">
+	            <a href="<?php echo esc_url( ffp_insight_url( $featured['slug'] ) ); ?>"><?php echo esc_html( $featured['title'] ); ?></a>
+	          </h2>
+	          <p class="insight-feature-dek"><?php echo esc_html( $featured['dek'] ); ?></p>
+	          <p class="feed-meta">
+	            <?php echo esc_html( $featured['author'] . ' · ' . $featured['date'] . ( $featured['read_time'] ? ' · ' . $featured['read_time'] : '' ) ); ?>
+	            <a class="feed-read" href="<?php echo esc_url( ffp_insight_url( $featured['slug'] ) ); ?>">Read the article →</a>
+	          </p>
+	        </div>
+	        <?php if ( $fimg ) : ?>
+	          <a class="insight-feature-img" href="<?php echo esc_url( ffp_insight_url( $featured['slug'] ) ); ?>" style="background-image:url('<?php echo esc_url( $fimg ); ?>')" aria-hidden="true" tabindex="-1"></a>
+	        <?php endif; ?>
 	      </article>
 	    <?php endif; ?>
 
 	    <div class="insight-feed">
-	      <?php foreach ( $feed as $i => $entry ) : ?>
+	      <?php foreach ( $feed as $i => $entry ) : $timg = $ffp_tag_img( $entry['tag'] ); ?>
 	        <a class="insight-row reveal<?php echo ' d' . min( 3, $i % 3 + 1 ); ?>" href="<?php echo esc_url( ffp_insight_url( $entry['slug'] ) ); ?>">
-	          <div class="insight-row-meta">
-	            <span class="feed-tag"><?php echo esc_html( $entry['tag'] ); ?></span>
-	            <span class="feed-date"><?php echo esc_html( $entry['date'] ); ?></span>
-	          </div>
+	          <?php if ( $timg ) : ?>
+	            <span class="insight-row-img" style="background-image:url('<?php echo esc_url( $timg ); ?>')"></span>
+	          <?php endif; ?>
 	          <div class="insight-row-main">
+	            <p class="insight-row-meta"><span class="feed-tag"><?php echo esc_html( $entry['tag'] ); ?></span> <span class="feed-date"><?php echo esc_html( $entry['date'] ); ?></span></p>
 	            <h3><?php echo esc_html( $entry['title'] ); ?></h3>
 	            <p><?php echo esc_html( $entry['dek'] ); ?></p>
 	            <span class="feed-meta"><?php echo esc_html( $entry['author'] . ( $entry['read_time'] ? ' · ' . $entry['read_time'] : '' ) ); ?></span>

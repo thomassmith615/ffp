@@ -21,7 +21,9 @@
     <?php foreach ( ffp_categories() as $slug => $cat ) : ?>
       <a href="<?php echo esc_url( ffp_category_url( $slug ) ); ?>"><?php echo esc_html( $cat['label'] ); ?></a>
     <?php endforeach; ?>
-    <a href="<?php echo esc_url( ffp_url( 'resources/calculators' ) ); ?>">All Calculators</a>
+    <?php if ( FFP_SHOW_CALCULATORS ) : ?>
+      <a href="<?php echo esc_url( ffp_url( 'resources/calculators' ) ); ?>">All Calculators</a>
+    <?php endif; ?>
     <a href="<?php echo esc_url( ffp_url( 'resources/videos' ) ); ?>" class="active">All Videos</a>
   </div>
 </nav>

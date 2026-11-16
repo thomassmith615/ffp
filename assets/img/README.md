@@ -9,6 +9,9 @@ needed. Until a file exists, the slot renders a styled placeholder
 | File (any supported extension) | Where it appears |
 |---|---|
 | `logo-tree` | Currently unused spare (transparent dark-silhouette tree), kept for future use. |
+| `cats/{category}.jpg` | Category photo — resources overview rows, category page feature image, and insights feed thumbnails (via tag mapping). Stock photos from Pexels; see CREDITS.md. Replace freely. |
+| `solutions/{slug}.jpg` | Solutions viewer panel image + used for the Planning insights thumbnail. |
+| `heroes/insights.jpg`, `heroes/contact.jpg` | Photo hero backgrounds (dark scrim applied in CSS). Remove the file to fall back to the flat dark hero with tree watermark. |
 | `logo-tree-toolbar` | Header nav + footer — replaces the green "F" circle next to the wordmark. Square, transparent background (works over the hero too), rendered at 42px. |
 | `logo-tree-og` | Transparent full-color logo, used as a one-color CSS-mask watermark in two ways: tan-tinted in-block mark on dark bands (home "Our Promise" strip, home CTA banner, About/Insights/Contact heroes — toggle per block via the `tree-watermark` class) and sage-tinted fixed fullscreen mark behind the Solutions pages. |
 | `home/why` | Home — the large 4:5 visual in the "Why Fortune Financial" section (replaces the gradient panel; cropped cover, the floating stat cards stay on top). |

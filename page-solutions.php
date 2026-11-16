@@ -1,12 +1,13 @@
 <?php
 /**
- * Solutions — numbered index at /solutions/, full solution pages at
- * /solutions/{slug}/ (validated in inc/routing.php). Content lives in
- * data/solutions.php.
+ * Solutions — full-page left/right viewer at /solutions/, full solution
+ * pages at /solutions/{slug}/ (validated in inc/routing.php). Content
+ * lives in data/solutions.php; panel images in assets/img/solutions/.
  *
- * The og tree logo renders fixed behind both the index and the
- * individual pages as a one-color (sage) mask watermark.
- * (logo-tree.png stays in assets/img as an unused spare.)
+ * Each viewer panel shows the solution's verbatim first paragraph; the
+ * complete client-approved copy lives on the individual page. On
+ * screens under 860px the viewer degrades to a vertical scroll of the
+ * same panels (no pager).
  */
 
 $ffp_slug = get_query_var( 'ffp_slug' );
@@ -27,9 +28,12 @@ if ( $ffp_slug ) {
 	get_footer();
 	return;
 }
+
+$ffp_solutions = ffp_solutions();
+$ffp_total     = count( $ffp_solutions );
 ?>
 
-<div class="page-hero solutions-hero">
+<div class="page-hero solutions-hero sol-layer">
   <div class="page-hero-inner">
     <p class="eyebrow">Solutions</p>
     <h1 class="display-title">Guidance built around <em>your full financial life</em></h1>
@@ -37,25 +41,37 @@ if ( $ffp_slug ) {
   </div>
 </div>
 
-<div class="section sol-layer">
-  <div class="section-inner">
-    <div class="sol-index">
-      <?php $i = 0; foreach ( ffp_solutions() as $slug => $sol ) : $i++; ?>
-        <a class="sol-index-row reveal d<?php echo esc_attr( ( $i - 1 ) % 3 + 1 ); ?>" href="<?php echo esc_url( ffp_solution_url( $slug ) ); ?>">
-          <span class="sol-index-num"><?php echo esc_html( sprintf( '%02d', $i ) ); ?></span>
-          <div class="sol-index-main">
-            <h2><?php echo esc_html( $sol['title'] ); ?></h2>
-            <p><?php echo esc_html( $sol['teaser'] ); ?></p>
-          </div>
-          <span class="res-index-arrow" aria-hidden="true">→</span>
-        </a>
-      <?php endforeach; ?>
-    </div>
+<div class="sol-viewer sol-layer" id="solViewer">
+  <div class="sol-viewer-track" id="solViewerTrack">
+    <?php $i = 0; foreach ( $ffp_solutions as $slug => $sol ) : $i++;
+      $img = ffp_image_url( 'solutions/' . $slug );
+      ?>
+      <article class="sol-panel">
+        <div class="sol-panel-img" <?php echo $img ? 'style="background-image:url(\'' . esc_url( $img ) . '\')"' : ''; ?>>
+          <span class="sol-panel-num"><?php echo esc_html( sprintf( '%02d', $i ) ); ?></span>
+        </div>
+        <div class="sol-panel-body">
+          <p class="eyebrow">Solution <?php echo esc_html( sprintf( '%02d', $i ) ); ?> — of <?php echo esc_html( sprintf( '%02d', $ffp_total ) ); ?></p>
+          <h2 class="sol-panel-title"><?php echo esc_html( $sol['title'] ); ?></h2>
+          <p class="body-copy sol-panel-copy"><?php echo esc_html( $sol['copy'][0] ); ?></p>
+          <p class="sol-topics"><?php echo esc_html( implode( '  ·  ', $sol['topics'] ) ); ?></p>
+          <a class="btn btn-green sol-panel-link" href="<?php echo esc_url( ffp_solution_url( $slug ) ); ?>">Explore This Solution</a>
+        </div>
+      </article>
+    <?php endforeach; ?>
+  </div>
 
-    <div class="sol-index-cta">
-      <p class="body-copy reveal">Not sure where to start? A 15-minute call is all it takes.</p>
-      <a class="btn btn-green reveal d1" href="<?php echo esc_url( ffp_url( 'contact' ) ); ?>">Schedule a Free Introduction</a>
-    </div>
+  <div class="sol-viewer-nav" aria-hidden="false">
+    <button class="sol-viewer-arrow" id="solPrev" type="button" aria-label="Previous solution">←</button>
+    <span class="sol-viewer-count" id="solViewerCount">01 / <?php echo esc_html( sprintf( '%02d', $ffp_total ) ); ?></span>
+    <button class="sol-viewer-arrow" id="solNext" type="button" aria-label="Next solution">→</button>
+  </div>
+</div>
+
+<div class="section sol-layer sol-index-cta-wrap">
+  <div class="section-inner" style="text-align:center">
+    <p class="body-copy reveal" style="margin-bottom:1.2rem">Not sure where to start? A 15-minute call is all it takes.</p>
+    <a class="btn btn-green reveal d1" href="<?php echo esc_url( ffp_url( 'contact' ) ); ?>">Schedule a Free Introduction</a>
   </div>
 </div>
 

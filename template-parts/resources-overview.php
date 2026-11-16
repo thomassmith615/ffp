@@ -18,10 +18,17 @@
   <div class="section-inner">
 
     <div class="res-index">
-      <?php $i = 0; foreach ( ffp_categories() as $slug => $cat ) : $i++; ?>
-        <a class="res-index-row reveal" href="<?php echo esc_url( ffp_category_url( $slug ) ); ?>">
-          <span class="res-index-num"><?php echo esc_html( sprintf( '%02d', $i ) ); ?></span>
+      <?php $i = 0; foreach ( ffp_categories() as $slug => $cat ) : $i++;
+        $photo = ffp_image_url( 'cats/' . $slug );
+        ?>
+        <a class="res-index-row<?php echo $photo ? ' has-photo' : ''; ?> reveal" href="<?php echo esc_url( ffp_category_url( $slug ) ); ?>">
+          <?php if ( $photo ) : ?>
+            <span class="res-index-img" style="background-image:url('<?php echo esc_url( $photo ); ?>')"></span>
+          <?php else : ?>
+            <span class="res-index-num"><?php echo esc_html( sprintf( '%02d', $i ) ); ?></span>
+          <?php endif; ?>
           <div class="res-index-main">
+            <p class="res-index-kicker"><?php echo esc_html( sprintf( '%02d', $i ) ); ?></p>
             <h2><?php echo esc_html( $cat['label'] ); ?></h2>
             <p><?php echo esc_html( $cat['summary'] ); ?></p>
           </div>
@@ -32,13 +39,15 @@
     </div>
 
     <div class="res-quick">
-      <a class="res-quick-row reveal" href="<?php echo esc_url( ffp_url( 'resources/calculators' ) ); ?>">
-        <div>
-          <h3>All Calculators</h3>
-          <p>Every interactive calculator we offer, organized by category.</p>
-        </div>
-        <span class="res-index-arrow" aria-hidden="true">→</span>
-      </a>
+      <?php if ( FFP_SHOW_CALCULATORS ) : ?>
+        <a class="res-quick-row reveal" href="<?php echo esc_url( ffp_url( 'resources/calculators' ) ); ?>">
+          <div>
+            <h3>All Calculators</h3>
+            <p>Every interactive calculator we offer, organized by category.</p>
+          </div>
+          <span class="res-index-arrow" aria-hidden="true">→</span>
+        </a>
+      <?php endif; ?>
       <a class="res-quick-row reveal d1" href="<?php echo esc_url( ffp_url( 'resources/videos' ) ); ?>">
         <div>
           <h3>All Videos</h3>

@@ -145,6 +145,51 @@
   wireAjaxForm('fortuneContactForm', 'fortune_contact', 'Message Sent');
   wireAjaxForm('fortunePrivacyForm', 'fortune_privacy', 'Request Sent');
 
+  /* ═══════════ SOLUTIONS FULL-PAGE VIEWER (/solutions/) ═══════════
+     Horizontal pager: arrows, keyboard ←/→, and touch swipe, wrapping
+     at the ends. Under 860px the CSS stacks the panels vertically and
+     the pager UI hides, so none of this runs meaningfully there. */
+  const solViewer = document.getElementById('solViewer');
+  if (solViewer) {
+    const track = document.getElementById('solViewerTrack');
+    const countEl = document.getElementById('solViewerCount');
+    const panels = track.children.length;
+    let idx = 0;
+    let inView = false;
+
+    // Keyboard paging only applies while the viewer is on screen, so
+    // arrow keys elsewhere on the page don't hijack scrolling.
+    new IntersectionObserver((entries) => {
+      entries.forEach((e) => { inView = e.isIntersecting; });
+    }, { threshold: 0.3 }).observe(solViewer);
+
+    const pad = (n) => String(n + 1).padStart(2, '0');
+    const go = (next, align) => {
+      idx = (next + panels) % panels;
+      track.style.transform = 'translateX(-' + idx * 100 + '%)';
+      countEl.textContent = pad(idx) + ' / ' + String(panels).padStart(2, '0');
+      // Realign the viewer with the viewport so the whole panel —
+      // copy, image, and controls — is visible after paging.
+      if (align) solViewer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    document.getElementById('solPrev').addEventListener('click', () => go(idx - 1, true));
+    document.getElementById('solNext').addEventListener('click', () => go(idx + 1, true));
+
+    document.addEventListener('keydown', (e) => {
+      if (!inView) return;
+      if (e.key === 'ArrowLeft') go(idx - 1, true);
+      if (e.key === 'ArrowRight') go(idx + 1, true);
+    });
+
+    let startX = 0;
+    solViewer.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; }, { passive: true });
+    solViewer.addEventListener('touchend', (e) => {
+      const dx = e.changedTouches[0].clientX - startX;
+      if (Math.abs(dx) > 60) go(dx < 0 ? idx + 1 : idx - 1);
+    }, { passive: true });
+  }
+
   /* ═══════════ VIDEO CATALOG SEARCH (/resources/videos/) ═══════════
      Live filter over the server-rendered list. Every typed word must
      appear in the item's title, description, or category name.

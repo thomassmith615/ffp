@@ -7,7 +7,8 @@
 get_header();
 ?>
 
-<div class="page-hero page-hero-dark contact-hero tree-watermark">
+<?php $ffp_contact_hero = ffp_image_url( 'heroes/contact' ); ?>
+<div class="page-hero page-hero-dark contact-hero<?php echo $ffp_contact_hero ? ' page-hero-img' : ' tree-watermark'; ?>"<?php echo $ffp_contact_hero ? ' style="--hero-img:url(\'' . esc_url( $ffp_contact_hero ) . '\')"' : ''; ?>>
   <div class="page-hero-inner">
     <p class="eyebrow">Contact</p>
     <h1 class="display-title">Let's start a <em>conversation</em></h1>

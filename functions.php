@@ -14,6 +14,14 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+/**
+ * Feature flag: calculators are hidden for the initial launch (no
+ * interactive tools built yet). Flip to true to restore the calculator
+ * tabs, the All Calculators page, and /resources/calculator/* routes —
+ * all the data and templates are intact.
+ */
+const FFP_SHOW_CALCULATORS = false;
+
 require_once get_template_directory() . '/inc/library.php';
 require_once get_template_directory() . '/inc/setup.php';
 require_once get_template_directory() . '/inc/routing.php';

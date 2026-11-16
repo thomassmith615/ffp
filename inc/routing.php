@@ -119,7 +119,10 @@ function ffp_validate_routes() {
 	};
 
 	if ( is_page( 'resources' ) ) {
-		if ( $kind && $slug ) {
+		// Calculators are feature-flagged off: their routes 404 until launch.
+		if ( ! FFP_SHOW_CALCULATORS && ( 'calculator' === $kind || 'calculators' === $category || 'calculators' === get_query_var( 'ffp_tab' ) ) ) {
+			$fail();
+		} elseif ( $kind && $slug ) {
 			$item = ffp_get_item( $slug );
 			if ( ! ffp_item_is_routable( $item ) || $item['kind'] !== $kind ) {
 				$fail();

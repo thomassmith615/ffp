@@ -99,11 +99,15 @@ function ffp_resource_list( array $items, $with_desc = false ) {
 	echo '</ul>';
 }
 
-/** "5 articles · 9 calculators · 2 videos" summary for a category. */
+/** "5 articles · 22 videos" summary for a category. */
 function ffp_category_count_label( $category ) {
 	$counts = ffp_category_counts( $category );
-	$parts  = [];
-	foreach ( [ 'article' => 'article', 'calculator' => 'calculator', 'video' => 'video' ] as $kind => $noun ) {
+	$kinds  = [ 'article' => 'article', 'calculator' => 'calculator', 'video' => 'video' ];
+	if ( ! FFP_SHOW_CALCULATORS ) {
+		unset( $kinds['calculator'] );
+	}
+	$parts = [];
+	foreach ( $kinds as $kind => $noun ) {
 		if ( $counts[ $kind ] > 0 ) {
 			$parts[] = $counts[ $kind ] . ' ' . $noun . ( 1 === $counts[ $kind ] ? '' : 's' );
 		}

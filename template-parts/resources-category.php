@@ -20,6 +20,9 @@ $tabs = [
 	'calculators' => [ 'Calculators', $counts['calculator'] ],
 	'videos'      => [ 'Videos', $counts['video'] ],
 ];
+if ( ! FFP_SHOW_CALCULATORS ) {
+	unset( $tabs['calculators'] );
+}
 $kind_for_tab = [ 'articles' => 'article', 'calculators' => 'calculator', 'videos' => 'video' ];
 ?>
 
@@ -39,7 +42,9 @@ $kind_for_tab = [ 'articles' => 'article', 'calculators' => 'calculator', 'video
     <?php foreach ( ffp_categories() as $slug => $other ) : ?>
       <a href="<?php echo esc_url( ffp_category_url( $slug ) ); ?>" class="<?php echo $slug === $category ? 'active' : ''; ?>"><?php echo esc_html( $other['label'] ); ?></a>
     <?php endforeach; ?>
-    <a href="<?php echo esc_url( ffp_url( 'resources/calculators' ) ); ?>">All Calculators</a>
+    <?php if ( FFP_SHOW_CALCULATORS ) : ?>
+      <a href="<?php echo esc_url( ffp_url( 'resources/calculators' ) ); ?>">All Calculators</a>
+    <?php endif; ?>
     <a href="<?php echo esc_url( ffp_url( 'resources/videos' ) ); ?>">All Videos</a>
   </div>
 </nav>
@@ -48,7 +53,12 @@ $kind_for_tab = [ 'articles' => 'article', 'calculators' => 'calculator', 'video
   <div class="section-inner res-cat-layout">
 
     <div class="res-cat-feature reveal">
-      <div class="res-split-img"><div class="res-split-img-inner"><?php echo esc_html( $cat['initial'] ); ?></div></div>
+      <?php $cat_photo = ffp_image_url( 'cats/' . $category ); ?>
+      <?php if ( $cat_photo ) : ?>
+        <div class="res-split-img res-split-img--photo" style="background-image:url('<?php echo esc_url( $cat_photo ); ?>')"></div>
+      <?php else : ?>
+        <div class="res-split-img"><div class="res-split-img-inner"><?php echo esc_html( $cat['initial'] ); ?></div></div>
+      <?php endif; ?>
       <div class="res-cat-feature-text">
         <h3><?php echo esc_html( $cat['blurb_title'] ); ?></h3>
         <p class="body-copy"><?php echo esc_html( $cat['blurb'] ); ?></p>
@@ -64,11 +74,11 @@ $kind_for_tab = [ 'articles' => 'article', 'calculators' => 'calculator', 'video
         <?php endforeach; ?>
       </nav>
 
-      <div class="reveal d1">
-        <?php ffp_resource_list( ffp_get_items( $category, $kind_for_tab[ $tab ] ), 'videos' === $tab ); ?>
+      <div class="reveal d1 res-cat-list">
+        <?php ffp_resource_list( ffp_get_items( $category, $kind_for_tab[ $tab ] ), true ); ?>
       </div>
 
-      <?php if ( 'calculators' === $tab ) : ?>
+      <?php if ( 'calculators' === $tab && FFP_SHOW_CALCULATORS ) : ?>
         <a class="view-all-link reveal d2" href="<?php echo esc_url( ffp_url( 'resources/calculators' ) ); ?>">View All Calculators →</a>
       <?php elseif ( 'videos' === $tab ) : ?>
         <a class="view-all-link reveal d2" href="<?php echo esc_url( ffp_url( 'resources/videos' ) ); ?>">View All Videos →</a>
